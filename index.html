@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Digitisation Workspace Manager</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: 'var(--brand-50)',
+                            100: 'var(--brand-100)',
+                            500: 'var(--brand-500)',
+                            600: 'var(--brand-600)',
+                            700: 'var(--brand-700)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (xlsx) for Excel import/export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Tajawal', sans-serif;
+        }
+        .rtl {
+            direction: rtl;
+        }
+        .ltr {
+            direction: ltr;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-200">
+
+    <!-- App Container -->
+    <div id="app" class="min-h-full flex flex-col">
+
+        <!-- Top Header Bar -->
+        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <div id="logo-icon-container" class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md">
+                        <i data-lucide="archive" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight" data-i18n="appTitle">Archive Digitisation Workspace</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="appSubtitle">Cases, Boxes & Team Workflow Manager</p>
+                    </div>
+                </div>
+
+                <!-- Settings Action Button -->
+                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition flex items-center space-x-2 rtl:space-x-reverse shadow-sm" title="Settings">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span class="hidden sm:inline text-xs font-semibold" data-i18n="settingsTitle">Settings</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs (URLSearchParams based) -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 rtl:space-x-reverse border-t border-slate-100 dark:border-slate-700/50">
+                <button onclick="switchTab('stats')" id="nav-stats" class="py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span data-i18n="tabStats">Statistics & Charts</span>
+                </button>
+                <button onclick="switchTab('workers')" id="nav-workers" class="py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span data-i18n="tabWorkers">Workers Profiles</span>
+                </button>
+                <button onclick="switchTab('activity')" id="nav-activity" class="py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span data-i18n="tabActivity">Workers Numbers & Activity</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Viewport -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            
+            <!-- TAB 1: STATISTICS & CHARTS -->
+            <div id="view-stats" class="space-y-6 hidden">
+                
+                <!-- Overview Stats Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="statTotalCases">Total Cases / Boxes</p>
+                            <h3 class="text-2xl font-bold mt-1" id="kpiCasesBoxes">12 / 48</h3>
+                            <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1 inline-block">1 Case = 4 Boxes</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+                            <i data-lucide="package" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="statSheetsScanned">Sheets Scanned Today</p>
+                            <h3 class="text-2xl font-bold mt-1" id="kpiScannedToday">12,450</h3>
+                            <span class="text-xs text-slate-400 mt-1 inline-block">Max capacity: 16,000</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                            <i data-lucide="scan" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="statBatchesTreated">Physical Batches Treated</p>
+                            <h3 class="text-2xl font-bold mt-1" id="kpiBatchesTreated">28</h3>
+                            <span class="text-xs text-slate-400 mt-1 inline-block">4 workers (4-10 each)</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                            <i data-lucide="layers" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="statCorrections">Corrections Completed</p>
+                            <h3 class="text-2xl font-bold mt-1" id="kpiCorrections">22</h3>
+                            <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1 inline-block">Target: 10-30 / day</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive Structure Quick Guide Banner -->
+                <div class="bg-gradient-to-r from-brand-600 to-indigo-700 text-white rounded-2xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between">
+                    <div class="space-y-2 mb-4 md:mb-0">
+                        <h2 class="text-xl font-bold flex items-center space-x-2 rtl:space-x-reverse">
+                            <i data-lucide="info" class="w-5 h-5"></i>
+                            <span data-i18n="bannerTitle">Digitisation Protocol & Specifications</span>
+                        </h2>
+                        <p class="text-brand-100 text-sm max-w-2xl" data-i18n="bannerDesc">
+                            Each Case contains 4 Boxes (450 - 700 pieces of paper per box). Composition ratio is maintained at ~75% A4 and ~25% A3 papers. Team comprises 8 active members across physical handling, scanning, error detection, correction, and management.
+                        </p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/20 text-center">
+                        <span class="text-xs uppercase tracking-wider text-brand-200 block" data-i18n="paperRatio">A4 / A3 Ratio</span>
+                        <span class="text-xl font-bold">75% A4 | 25% A3</span>
+                    </div>
+                </div>
+
+                <!-- Individual Dedicated Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- 1. Physical Treatment Chart -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-base flex items-center space-x-2 rtl:space-x-reverse">
+                                <i data-lucide="layers" class="w-4 h-4 text-amber-500"></i>
+                                <span data-i18n="chartPhysical">Physical Treatment Batches</span>
+                            </h3>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="chartPhysicalCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 2. Scanning Chart -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-base flex items-center space-x-2 rtl:space-x-reverse">
+                                <i data-lucide="scan" class="w-4 h-4 text-blue-500"></i>
+                                <span data-i18n="chartScanning">Scanning Volume (Sheets)</span>
+                            </h3>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="chartScanningCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 3. Error Detection & Correction Chart -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-base flex items-center space-x-2 rtl:space-x-reverse">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-purple-500"></i>
+                                <span data-i18n="chartCorrection">Errors & Corrections</span>
+                            </h3>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="chartCorrectionCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: WORKERS PROFILES -->
+            <div id="view-workers" class="space-y-6 hidden">
+                
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold" data-i18n="workersHeader">Team Profiles & Role Management</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="workersSub">Manage the 8 workspace members. The Team Manager can dynamically reassign roles.</p>
+                    </div>
+                    <button onclick="openAddWorkerModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium shadow-sm flex items-center space-x-2 rtl:space-x-reverse transition">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span data-i18n="addWorkerBtn">Add Worker</span>
+                    </button>
+                </div>
+
+                <!-- Workers Grid -->
+                <div id="workersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+
+            </div>
+
+            <!-- TAB 3: WORKERS NUMBERS & ACTIVITY -->
+            <div id="view-activity" class="space-y-6 hidden">
+                
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold" data-i18n="activityHeader">Activity Logs & Performance Numbers</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="activitySub">Track daily treated batches, sheets scanned, and error corrections per worker.</p>
+                    </div>
+                    <button onclick="openLogActivityModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium shadow-sm flex items-center space-x-2 rtl:space-x-reverse transition">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span data-i18n="logActivityBtn">Log Daily Activity</span>
+                    </button>
+                </div>
+
+                <!-- Filters, Search & Sorting Controls -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto flex-1">
+                        <!-- Search Bar -->
+                        <div class="relative flex-1 max-w-xs">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 rtl:left-auto rtl:right-3 text-slate-400"></i>
+                            <input type="text" id="activitySearch" oninput="handleActivityFilter()" placeholder="Search worker or role..." class="w-full pl-9 pr-3 rtl:pl-3 rtl:pr-9 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+
+                        <!-- Role Filter -->
+                        <select id="activityRoleFilter" onchange="handleActivityFilter()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="ALL" data-i18n="allRoles">All Roles</option>
+                            <option value="Physical Treatment">Physical Treatment</option>
+                            <option value="Scanning">Scanning</option>
+                            <option value="Error Detection">Error Detection</option>
+                            <option value="Error Correction">Error Correction</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Controls -->
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse w-full sm:w-auto justify-end">
+                        <span class="text-xs text-slate-500 dark:text-slate-400" data-i18n="sortBy">Sort:</span>
+                        <select id="activitySortField" onchange="handleActivityFilter()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="date" data-i18n="sortDate">Date</option>
+                            <option value="workerName" data-i18n="sortWorker">Worker</option>
+                            <option value="batches" data-i18n="sortBatches">Batches</option>
+                            <option value="scanned" data-i18n="sortScanned">Scanned</option>
+                            <option value="corrected" data-i18n="sortCorrected">Corrections</option>
+                        </select>
+                        <button onclick="toggleSortDirection()" id="sortDirBtn" class="p-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                            <i data-lucide="arrow-down-narrow-wide" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Activity Table Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                    <th class="p-4" data-i18n="thDate">Date</th>
+                                    <th class="p-4" data-i18n="thWorker">Worker</th>
+                                    <th class="p-4" data-i18n="thRole">Role</th>
+                                    <th class="p-4" data-i18n="thBatches">Batches Treated</th>
+                                    <th class="p-4" data-i18n="thScanned">Sheets Scanned</th>
+                                    <th class="p-4" data-i18n="thCorrected">Corrections Made</th>
+                                    <th class="p-4 text-right" data-i18n="thActions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="p-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                        <span id="paginationInfo" class="text-slate-500 dark:text-slate-400">Showing 1 to 5 of 5 records</span>
+                        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                            <button id="prevPageBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-medium disabled:opacity-50 transition" disabled>Previous</button>
+                            <span id="currentPageNum" class="px-2 font-bold">1</span>
+                            <button id="nextPageBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-medium disabled:opacity-50 transition" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- CONSOLIDATED SETTINGS DIALOG (WITH SIDEBAR) -->
+    <dialog id="settingsModal" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-0 w-full max-w-2xl backdrop:bg-slate-900/50 overflow-hidden">
+        <div class="flex flex-col sm:flex-row h-full min-h-[420px]">
+            <!-- Sidebar Navigation -->
+            <div class="w-full sm:w-48 bg-slate-50 dark:bg-slate-900/50 p-4 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 flex sm:flex-col space-x-2 sm:space-x-0 sm:space-y-1 rtl:space-x-reverse">
+                <div class="hidden sm:block pb-3 px-2 border-b border-slate-200 dark:border-slate-700 mb-2">
+                    <h3 class="font-bold text-sm" data-i18n="settingsTitle">Settings</h3>
+                </div>
+                <button onclick="switchSettingsTab('appearance')" id="setTabNav-appearance" class="w-full text-left rtl:text-right px-3 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-2 rtl:space-x-reverse bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+                    <i data-lucide="palette" class="w-4 h-4"></i>
+                    <span data-i18n="setTabAppearance">Appearance</span>
+                </button>
+                <button onclick="switchSettingsTab('data')" id="setTabNav-data" class="w-full text-left rtl:text-right px-3 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-2 rtl:space-x-reverse text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span data-i18n="setTabData">Data & Backup</span>
+                </button>
+                <button onclick="switchSettingsTab('language')" id="setTabNav-language" class="w-full text-left rtl:text-right px-3 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-2 rtl:space-x-reverse text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span data-i18n="setTabLanguage">Language</span>
+                </button>
+            </div>
+
+            <!-- Content Panel -->
+            <div class="flex-1 p-6 flex flex-col justify-between">
+                <div>
+                    <!-- TAB 1: APPEARANCE -->
+                    <div id="setTab-appearance" class="space-y-5">
+                        <div>
+                            <h4 class="font-bold text-base mb-1" data-i18n="themeSettingTitle">Theme Mode</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3" data-i18n="themeSettingDesc">Toggle between Light and Dark visual modes.</p>
+                            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                <button onclick="setTheme('light')" id="btnThemeLight" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center space-x-2 rtl:space-x-reverse font-medium text-xs hover:border-brand-500 transition">
+                                    <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
+                                    <span>Light</span>
+                                </button>
+                                <button onclick="setTheme('dark')" id="btnThemeDark" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center space-x-2 rtl:space-x-reverse font-medium text-xs hover:border-brand-500 transition">
+                                    <i data-lucide="moon" class="w-4 h-4 text-indigo-400"></i>
+                                    <span>Dark</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                            <h4 class="font-bold text-base mb-1" data-i18n="accentSettingTitle">Accent Theme Color</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3" data-i18n="accentSettingDesc">Choose your primary dynamic brand color.</p>
+                            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                <button onclick="changeAccent('indigo')" class="w-8 h-8 rounded-full bg-indigo-600 hover:scale-110 transition shadow-sm" title="Indigo"></button>
+                                <button onclick="changeAccent('emerald')" class="w-8 h-8 rounded-full bg-emerald-600 hover:scale-110 transition shadow-sm" title="Emerald"></button>
+                                <button onclick="changeAccent('rose')" class="w-8 h-8 rounded-full bg-rose-600 hover:scale-110 transition shadow-sm" title="Rose"></button>
+                                <button onclick="changeAccent('amber')" class="w-8 h-8 rounded-full bg-amber-600 hover:scale-110 transition shadow-sm" title="Amber"></button>
+                                <button onclick="changeAccent('purple')" class="w-8 h-8 rounded-full bg-purple-600 hover:scale-110 transition shadow-sm" title="Purple"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: DATA AND BACKUP -->
+                    <div id="setTab-data" class="space-y-4 hidden">
+                        <h4 class="font-bold text-base" data-i18n="dataSettingTitle">Data Import & Export</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="dataSettingDesc">Download or restore workspace metrics, activity logs, and workers structure.</p>
+
+                        <div class="space-y-2 pt-2">
+                            <button onclick="exportData('json')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between text-xs sm:text-sm font-medium transition">
+                                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                    <i data-lucide="file-code" class="w-5 h-5 text-brand-600"></i>
+                                    <span data-i18n="exportJson">Export JSON Workspace Backup</span>
+                                </div>
+                                <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
+                            </button>
+                            <button onclick="exportData('csv')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between text-xs sm:text-sm font-medium transition">
+                                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                    <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-600"></i>
+                                    <span data-i18n="exportCsv">Export Activity CSV</span>
+                                </div>
+                                <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
+                            </button>
+                            <button onclick="exportData('xlsx')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between text-xs sm:text-sm font-medium transition">
+                                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                    <i data-lucide="file-spreadsheet" class="w-5 h-5 text-amber-600"></i>
+                                    <span data-i18n="exportXlsx">Export Excel Spreadsheet (.xlsx)</span>
+                                </div>
+                                <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
+                            </button>
+                            <label class="w-full p-3 rounded-xl border border-dashed border-brand-300 dark:border-brand-700 bg-brand-50/50 dark:bg-brand-900/20 hover:bg-brand-100/50 flex items-center justify-between text-xs sm:text-sm font-medium transition cursor-pointer">
+                                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                    <i data-lucide="upload" class="w-5 h-5 text-brand-600"></i>
+                                    <span data-i18n="importData">Import Workspace File</span>
+                                </div>
+                                <input type="file" id="importFile" accept=".json" onchange="importData(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: LANGUAGE -->
+                    <div id="setTab-language" class="space-y-4 hidden">
+                        <h4 class="font-bold text-base" data-i18n="langSettingTitle">Workspace Language</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="langSettingDesc">Choose your preferred workspace interface language.</p>
+
+                        <div class="space-y-2 pt-2">
+                            <button onclick="changeLang('en')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between text-xs sm:text-sm font-medium transition">
+                                <span>English</span>
+                                <i data-lucide="check" class="w-4 h-4 text-brand-600 opacity-0" id="langCheck-en"></i>
+                            </button>
+                            <button onclick="changeLang('ar')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between text-xs sm:text-sm font-medium transition">
+                                <span>العربية</span>
+                                <i data-lucide="check" class="w-4 h-4 text-brand-600 opacity-0" id="langCheck-ar"></i>
+                            </button>
+                            <button onclick="changeLang('fr')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between text-xs sm:text-sm font-medium transition">
+                                <span>Français</span>
+                                <i data-lucide="check" class="w-4 h-4 text-brand-600 opacity-0" id="langCheck-fr"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+                    <button onclick="closeSettingsModal()" class="px-5 py-2 bg-brand-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-brand-700 transition" data-i18n="closeBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL: Edit Worker Profile -->
+    <dialog id="workerModal" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 w-full max-w-md backdrop:bg-slate-900/50">
+        <form method="dialog" id="workerForm" onsubmit="saveWorker(event)" class="space-y-4">
+            <h3 class="text-lg font-bold" data-i18n="modalWorkerTitle">Edit Worker Profile</h3>
+            <input type="hidden" id="editWorkerId">
+            <div>
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="workerNameLabel">Worker Name</label>
+                <input type="text" id="editWorkerName" required class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="workerRoleLabel">Assigned Role (Manager can change)</label>
+                <select id="editWorkerRole" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option value="Physical Treatment">Physical Treatment (4-10 batches/day)</option>
+                    <option value="Scanning">Scanning (up to 16,000 sheets/day)</option>
+                    <option value="Error Detection">Error Detection (jams, superimposition)</option>
+                    <option value="Error Correction">Error Correction (10-30 batches/day)</option>
+                    <option value="Team Manager">Team Manager</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="workerStatusLabel">Status</label>
+                <select id="editWorkerStatus" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option value="Active">Active</option>
+                    <option value="On Break">On Break</option>
+                    <option value="Leave">On Leave</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse pt-2">
+                <button type="button" onclick="document.getElementById('workerModal').close()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition" data-i18n="cancelBtn">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium transition" data-i18n="saveBtn">Save Changes</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- MODAL: Log/Edit Activity -->
+    <dialog id="activityModal" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 w-full max-w-md backdrop:bg-slate-900/50">
+        <form method="dialog" id="activityForm" onsubmit="saveActivity(event)" class="space-y-4">
+            <h3 class="text-lg font-bold" id="activityModalHeading" data-i18n="modalActivityTitle">Log Daily Activity</h3>
+            <input type="hidden" id="editActivityId">
+            <div>
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="actDateLabel">Date</label>
+                <input type="date" id="logDate" required class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="actWorkerLabel">Worker</label>
+                <select id="logWorkerId" required class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="actBatchesLabel">Batches</label>
+                    <input type="number" id="logBatches" min="0" value="0" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="actScannedLabel">Scanned Sheets</label>
+                    <input type="number" id="logScanned" min="0" value="0" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="actCorrectedLabel">Corrections</label>
+                    <input type="number" id="logCorrected" min="0" value="0" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse pt-2">
+                <button type="button" onclick="document.getElementById('activityModal').close()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition" data-i18n="cancelBtn">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium transition" data-i18n="saveBtn">Save Log</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 rtl:right-auto rtl:left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center space-x-2 rtl:space-x-reverse text-sm">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+        <span id="toastMsg">Action completed successfully</span>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // --- Internationalization Dictionaries ---
+        const i18n = {
+            en: {
+                appTitle: "Archive Digitisation Workspace",
+                appSubtitle: "Cases, Boxes & Team Workflow Manager",
+                settingsTitle: "Settings",
+                setTabAppearance: "Appearance",
+                setTabData: "Data & Backup",
+                setTabLanguage: "Language",
+                themeSettingTitle: "Theme Mode",
+                themeSettingDesc: "Toggle between Light and Dark visual modes.",
+                accentSettingTitle: "Accent Theme Color",
+                accentSettingDesc: "Choose your primary dynamic brand color.",
+                dataSettingTitle: "Data Import & Export",
+                dataSettingDesc: "Download or restore workspace metrics, activity logs, and workers structure.",
+                langSettingTitle: "Workspace Language",
+                langSettingDesc: "Choose your preferred workspace interface language.",
+                closeBtn: "Close",
+                exportJson: "Export JSON Workspace Backup",
+                exportCsv: "Export Activity CSV",
+                exportXlsx: "Export Excel Spreadsheet (.xlsx)",
+                importData: "Import Workspace File",
+                tabStats: "Statistics & Charts",
+                tabWorkers: "Workers Profiles",
+                tabActivity: "Workers Numbers & Activity",
+                statTotalCases: "Total Cases / Boxes",
+                statSheetsScanned: "Sheets Scanned Today",
+                statBatchesTreated: "Physical Batches Treated",
+                statCorrections: "Corrections Completed",
+                bannerTitle: "Digitisation Protocol & Specifications",
+                bannerDesc: "Each Case contains 4 Boxes (450 - 700 pieces of paper per box). Composition ratio is maintained at ~75% A4 and ~25% A3 papers. Team comprises 8 active members across physical handling, scanning, error detection, correction, and management.",
+                paperRatio: "A4 / A3 Ratio",
+                chartPhysical: "Physical Treatment Batches",
+                chartScanning: "Scanning Volume (Sheets)",
+                chartCorrection: "Errors & Corrections",
+                workersHeader: "Team Profiles & Role Management",
+                workersSub: "Manage the 8 workspace members. The Team Manager can dynamically reassign roles.",
+                addWorkerBtn: "Add Worker",
+                activityHeader: "Activity Logs & Performance Numbers",
+                activitySub: "Track daily treated batches, sheets scanned, and error corrections per worker.",
+                logActivityBtn: "Log Daily Activity",
+                allRoles: "All Roles",
+                sortBy: "Sort:",
+                sortDate: "Date",
+                sortWorker: "Worker",
+                sortBatches: "Batches",
+                sortScanned: "Scanned",
+                sortCorrected: "Corrections",
+                thDate: "Date",
+                thWorker: "Worker",
+                thRole: "Role",
+                thBatches: "Batches Treated",
+                thScanned: "Sheets Scanned",
+                thCorrected: "Corrections Made",
+                thActions: "Actions",
+                modalWorkerTitle: "Edit Worker Profile",
+                workerNameLabel: "Worker Name",
+                workerRoleLabel: "Assigned Role (Manager can change)",
+                workerStatusLabel: "Status",
+                cancelBtn: "Cancel",
+                saveBtn: "Save Changes",
+                modalActivityTitle: "Log Daily Activity",
+                modalActivityEditTitle: "Edit Daily Activity",
+                actDateLabel: "Date",
+                actWorkerLabel: "Worker",
+                actBatchesLabel: "Batches",
+                actScannedLabel: "Scanned Sheets",
+                actCorrectedLabel: "Corrections",
+                deleteWorker: "Delete",
+                editWorker: "Edit",
+                rolePhysical: "Physical Treatment",
+                roleScanning: "Scanning",
+                roleDetection: "Error Detection",
+                roleCorrection: "Error Correction",
+                roleManager: "Team Manager",
+                statusActive: "Active",
+                statusBreak: "On Break",
+                statusLeave: "On Leave"
+            },
+            ar: {
+                appTitle: "مساحة عمل رقمة الأرشيف",
+                appSubtitle: "إدارة الحالات، الصناديق وسير عمل الفريق",
+                settingsTitle: "الإعدادات",
+                setTabAppearance: "المظهر",
+                setTabData: "البيانات والنسخ الاحتياطي",
+                setTabLanguage: "اللغة",
+                themeSettingTitle: "وضع المظهر",
+                themeSettingDesc: "التبديل بين الوضع الفاتح والداكن.",
+                accentSettingTitle: "لون التمييز",
+                accentSettingDesc: "اختر لونك الرئيسي المفضل.",
+                dataSettingTitle: "استيراد وتصدير البيانات",
+                dataSettingDesc: "تنزيل أو استعادة مقاييس مساحة العمل وسجلات النشاط.",
+                langSettingTitle: "لغة مساحة العمل",
+                langSettingDesc: "اختر لغة الواجهة المفضلة لديك.",
+                closeBtn: "إغلاق",
+                exportJson: "تصدير نسخة احتياطية JSON",
+                exportCsv: "تصدير النشاط CSV",
+                exportXlsx: "تصدير جدول Excel (.xlsx)",
+                importData: "استيراد ملف مساحة العمل",
+                tabStats: "الإحصاءات والرسوم البيانية",
+                tabWorkers: "ملفات العمال",
+                tabActivity: "أرقام ونشاط العمال",
+                statTotalCases: "إجمالي الحالات / الصناديق",
+                statSheetsScanned: "الأوراق الممسوحة اليوم",
+                statBatchesTreated: "الدفعات الفيزيائية المعالجة",
+                statCorrections: "التصحيحات المكتملة",
+                bannerTitle: "بروتوكول ومواصفات الرقمنة",
+                bannerDesc: "تحتوي كل حالة على 4 صناديق (450 إلى 700 ورقة لكل صندوق). نسبة التركيبة ~75% A4 و ~25% A3. يتكون الفريق من 8 أعضاء نشطين.",
+                paperRatio: "نسبة A4 / A3",
+                chartPhysical: "دفعات المعالجة الفيزيائية",
+                chartScanning: "حجم المسح الضوئي (أوراق)",
+                chartCorrection: "الأخطاء والتصحيحات",
+                workersHeader: "ملفات الفريق وإدارة الأدوار",
+                workersSub: "إدارة الأعضاء الـ 8 لمساحة العمل. يمكن لمدير الفريق إعادة تعيين الأدوار ديناميكياً.",
+                addWorkerBtn: "إضافة عامل",
+                activityHeader: "سجلات النشاط وأرقام الأداء",
+                activitySub: "تتبع الدفعات المعالجة يومياً، الأوراق الممسوحة، وتصحيحات الأخطاء لكل عامل.",
+                logActivityBtn: "تسجيل نشاط يومي",
+                allRoles: "جميع الأدوار",
+                sortBy: "فرز حسب:",
+                sortDate: "التاريخ",
+                sortWorker: "العامل",
+                sortBatches: "الدفعات",
+                sortScanned: "المسح الضوئي",
+                sortCorrected: "التصحيحات",
+                thDate: "التاريخ",
+                thWorker: "العامل",
+                thRole: "الدور",
+                thBatches: "الدفعات المعالجة",
+                thScanned: "الأوراق الممسوحة",
+                thCorrected: "التصحيحات المنجزة",
+                thActions: "الإجراءات",
+                modalWorkerTitle: "تعديل ملف العامل",
+                workerNameLabel: "اسم العامل",
+                workerRoleLabel: "الدور المعين (يمكن لمدير الفريق تغييره)",
+                workerStatusLabel: "الحالة",
+                cancelBtn: "إلغاء",
+                saveBtn: "حفظ التغييرات",
+                modalActivityTitle: "تسجيل النشاط اليومي",
+                modalActivityEditTitle: "تعديل النشاط اليومي",
+                actDateLabel: "التاريخ",
+                actWorkerLabel: "العامل",
+                actBatchesLabel: "الدفعات",
+                actScannedLabel: "الأوراق الممسوحة",
+                actCorrectedLabel: "التصحيحات",
+                deleteWorker: "حذف",
+                editWorker: "تعديل",
+                rolePhysical: "المعاملة الفيزيائية",
+                roleScanning: "المسح الضوئي",
+                roleDetection: "كشف الأخطاء",
+                roleCorrection: "تصحيح الأخطاء",
+                roleManager: "مدير الفريق",
+                statusActive: "نشط",
+                statusBreak: "في استراحة",
+                statusLeave: "في إجازة"
+            },
+            fr: {
+                appTitle: "Espace de Gestion des Archives Numérisées",
+                appSubtitle: "Gestion des Boîtes, Cas et Workflow d'Équipe",
+                settingsTitle: "Paramètres",
+                setTabAppearance: "Apparence",
+                setTabData: "Données & Sauvegarde",
+                setTabLanguage: "Langue",
+                themeSettingTitle: "Mode Thème",
+                themeSettingDesc: "Basculer entre les modes clair et sombre.",
+                accentSettingTitle: "Couleur d'Accentuation",
+                accentSettingDesc: "Choisissez votre couleur de marque principale.",
+                dataSettingTitle: "Importation & Exportation",
+                dataSettingDesc: "Téléchargez ou restaurez les données de l'espace de travail.",
+                langSettingTitle: "Langue de l'Espace",
+                langSettingDesc: "Choisissez la langue de votre interface.",
+                closeBtn: "Fermer",
+                exportJson: "Exporter Sauvegarde JSON",
+                exportCsv: "Exporter CSV Activités",
+                exportXlsx: "Exporter Feuille Excel (.xlsx)",
+                importData: "Importer Fichier Espace",
+                tabStats: "Statistiques & Graphiques",
+                tabWorkers: "Profils des Travailleurs",
+                tabActivity: "Activité & Chiffres des Travailleurs",
+                statTotalCases: "Total Cas / Boîtes",
+                statSheetsScanned: "Feuilles Scannées Aujourd'hui",
+                statBatchesTreated: "Lots Physiques Traités",
+                statCorrections: "Corrections Terminées",
+                bannerTitle: "Protocole & Spécifications de Numérisation",
+                bannerDesc: "Chaque cas contient 4 boîtes (450 à 700 feuilles par boîte). Ratio de composition d'environ 75% A4 et 25% A3. Équipe de 8 membres.",
+                paperRatio: "Ratio A4 / A3",
+                chartPhysical: "Lots Traités Physiquement",
+                chartScanning: "Volume de Numérisation",
+                chartCorrection: "Erreurs et Corrections",
+                workersHeader: "Profils d'Équipe & Gestion des Rôles",
+                workersSub: "Gérez les 8 membres. Le manager d'équipe peut modifier les rôles selon les besoins.",
+                addWorkerBtn: "Ajouter un Travailleur",
+                activityHeader: "Journaux d'Activité & Indicateurs",
+                activitySub: "Suivez les lots traités, feuilles scannées et corrections par travailleur.",
+                logActivityBtn: "Enregistrer l'Activité",
+                allRoles: "Tous les Rôles",
+                sortBy: "Trier par:",
+                sortDate: "Date",
+                sortWorker: "Travailleur",
+                sortBatches: "Lots",
+                sortScanned: "Numérisations",
+                sortCorrected: "Corrections",
+                thDate: "Date",
+                thWorker: "Travailleur",
+                thRole: "Rôle",
+                thBatches: "Lots Traités",
+                thScanned: "Feuilles Scannées",
+                thCorrected: "Corrections Effectuées",
+                thActions: "Actions",
+                modalWorkerTitle: "Modifier le Profil",
+                workerNameLabel: "Nom du Travailleur",
+                workerRoleLabel: "Rôle Assigné (Modifiable par le manager)",
+                workerStatusLabel: "Statut",
+                cancelBtn: "Annuler",
+                saveBtn: "Enregistrer",
+                modalActivityTitle: "Enregistrer l'Activité",
+                modalActivityEditTitle: "Modifier l'Activité",
+                actDateLabel: "Date",
+                actWorkerLabel: "Travailleur",
+                actBatchesLabel: "Lots",
+                actScannedLabel: "Feuilles Scannées",
+                actCorrectedLabel: "Corrections",
+                deleteWorker: "Supprimer",
+                editWorker: "Modifier",
+                rolePhysical: "Traitement Physique",
+                roleScanning: "Numérisation",
+                roleDetection: "Détection d'Erreurs",
+                roleCorrection: "Correction d'Erreurs",
+                roleManager: "Manager d'Équipe",
+                statusActive: "Actif",
+                statusBreak: "En Pause",
+                statusLeave: "En Congé"
+            }
+        };
+
+        // --- Accent Color Palettes ---
+        const accents = {
+            indigo: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+            emerald: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857' },
+            rose: { 50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c' },
+            amber: { 50: '#fffbeb', 100: '#fef3c7', 500: '#f59e0b', 600: '#d97706', 700: '#b45309' },
+            purple: { 50: '#faf5ff', 100: '#f3e8ff', 500: '#a855f7', 600: '#9333ea', 700: '#7e22ce' }
+        };
+
+        // --- App State ---
+        let state = {
+            tab: 'stats',
+            theme: 'light',
+            accent: 'indigo',
+            lang: 'en',
+            settingsTab: 'appearance',
+            workers: [
+                { id: 1, name: 'Ahmed Benali', role: 'Physical Treatment', status: 'Active' },
+                { id: 2, name: 'Sarah Connor', role: 'Physical Treatment', status: 'Active' },
+                { id: 3, name: 'Karim Benzema', role: 'Physical Treatment', status: 'Active' },
+                { id: 4, name: 'Fatima Zohra', role: 'Physical Treatment', status: 'Active' },
+                { id: 5, name: 'John Wick', role: 'Scanning', status: 'Active' },
+                { id: 6, name: 'Marie Curie', role: 'Error Detection', status: 'Active' },
+                { id: 7, name: 'Alan Turing', role: 'Error Correction', status: 'Active' },
+                { id: 8, name: 'Thomas Edison', role: 'Team Manager', status: 'Active' }
+            ],
+            activities: [
+                { id: 1, date: '2026-11-08', workerId: 1, workerName: 'Ahmed Benali', role: 'Physical Treatment', batches: 7, scanned: 0, corrected: 0 },
+                { id: 2, date: '2026-11-08', workerId: 2, workerName: 'Sarah Connor', role: 'Physical Treatment', batches: 6, scanned: 0, corrected: 0 },
+                { id: 3, date: '2026-11-08', workerId: 5, workerName: 'John Wick', role: 'Scanning', batches: 0, scanned: 14200, corrected: 0 },
+                { id: 4, date: '2026-11-08', workerId: 6, workerName: 'Marie Curie', role: 'Error Detection', batches: 0, scanned: 0, corrected: 18 },
+                { id: 5, date: '2026-11-08', workerId: 7, workerName: 'Alan Turing', role: 'Error Correction', batches: 0, scanned: 0, corrected: 24 },
+                { id: 6, date: '2026-11-07', workerId: 3, workerName: 'Karim Benzema', role: 'Physical Treatment', batches: 8, scanned: 0, corrected: 0 },
+                { id: 7, date: '2026-11-07', workerId: 5, workerName: 'John Wick', role: 'Scanning', batches: 0, scanned: 15100, corrected: 0 }
+            ],
+            // Table state
+            activityFilter: {
+                search: '',
+                role: 'ALL',
+                sortField: 'date',
+                sortDir: 'desc',
+                page: 1,
+                pageSize: 5
+            }
+        };
+
+        let physicalChartInstance = null;
+        let scanningChartInstance = null;
+        let correctionChartInstance = null;
+
+        // --- Initialization & URLSearchParams Sync ---
+        window.addEventListener('DOMContentLoaded', () => {
+            parseUrlParams();
+            applyState();
+            initCharts();
+            renderAll();
+        });
+
+        function parseUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('tab')) state.tab = params.get('tab');
+            if (params.has('theme')) state.theme = params.get('theme');
+            if (params.has('accent')) state.accent = params.get('accent');
+            if (params.has('lang')) state.lang = params.get('lang');
+        }
+
+        function updateUrlParams() {
+            const params = new URLSearchParams();
+            params.set('tab', state.tab);
+            params.set('theme', state.theme);
+            params.set('accent', state.accent);
+            params.set('lang', state.lang);
+            const newRelativePathQuery = window.location.pathname + '?' + params.toString();
+            history.pushState(null, '', newRelativePathQuery);
+        }
+
+        // --- State Application & Rendering ---
+        function applyState() {
+            // Theme
+            const html = document.documentElement;
+            if (state.theme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+
+            // Accent Color
+            const palette = accents[state.accent] || accents.indigo;
+            const root = document.documentElement;
+            root.style.setProperty('--brand-50', palette[50]);
+            root.style.setProperty('--brand-100', palette[100]);
+            root.style.setProperty('--brand-500', palette[500]);
+            root.style.setProperty('--brand-600', palette[600]);
+            root.style.setProperty('--brand-700', palette[700]);
+
+            // Language & Direction
+            if (state.lang === 'ar') {
+                html.setAttribute('dir', 'rtl');
+                html.setAttribute('lang', 'ar');
+            } else {
+                html.setAttribute('dir', 'ltr');
+                html.setAttribute('lang', state.lang);
+            }
+
+            // Settings dialog language checks
+            ['en', 'ar', 'fr'].forEach(l => {
+                const check = document.getElementById(`langCheck-${l}`);
+                if (check) check.style.opacity = state.lang === l ? '1' : '0';
+            });
+
+            // Translate Static UI elements
+            translateUI();
+            lucide.createIcons();
+        }
+
+        function translateUI() {
+            const dict = i18n[state.lang] || i18n.en;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.textContent = dict[key];
+                }
+            });
+        }
+
+        function switchTab(tabKey) {
+            state.tab = tabKey;
+            updateUrlParams();
+            renderAll();
+        }
+
+        function renderAll() {
+            // Highlight active tab button
+            ['stats', 'workers', 'activity'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                if (t === state.tab) {
+                    btn.className = "py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-brand-600 text-brand-600 dark:text-brand-400";
+                    view.classList.remove('hidden');
+                } else {
+                    btn.className = "py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200";
+                    view.classList.add('hidden');
+                }
+            });
+
+            if (state.tab === 'stats') {
+                updateStatsKPIs();
+                if (physicalChartInstance) physicalChartInstance.resize();
+                if (scanningChartInstance) scanningChartInstance.resize();
+                if (correctionChartInstance) correctionChartInstance.resize();
+            } else if (state.tab === 'workers') {
+                renderWorkersGrid();
+            } else if (state.tab === 'activity') {
+                renderActivityTable();
+            }
+
+            lucide.createIcons();
+        }
+
+        // --- Settings Dialog Logic ---
+        function openSettingsModal() {
+            switchSettingsTab(state.settingsTab || 'appearance');
+            document.getElementById('settingsModal').showModal();
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').close();
+        }
+
+        function switchSettingsTab(tabName) {
+            state.settingsTab = tabName;
+            ['appearance', 'data', 'language'].forEach(t => {
+                const btn = document.getElementById(`setTabNav-${t}`);
+                const view = document.getElementById(`setTab-${t}`);
+                if (t === tabName) {
+                    btn.className = "w-full text-left rtl:text-right px-3 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-2 rtl:space-x-reverse bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300";
+                    view.classList.remove('hidden');
+                } else {
+                    btn.className = "w-full text-left rtl:text-right px-3 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-2 rtl:space-x-reverse text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800";
+                    view.classList.add('hidden');
+                }
+            });
+        }
+
+        function setTheme(t) {
+            state.theme = t;
+            updateUrlParams();
+            applyState();
+        }
+
+        function changeAccent(colorName) {
+            state.accent = colorName;
+            updateUrlParams();
+            applyState();
+        }
+
+        function changeLang(langCode) {
+            state.lang = langCode;
+            updateUrlParams();
+            applyState();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // --- Data Import & Export ---
+        function exportData(format) {
+            const dataStr = JSON.stringify(state, null, 2);
+            if (format === 'json') {
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `archive_workspace_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                showToast('JSON Export successful');
+            } else if (format === 'csv') {
+                let csv = 'Date,Worker,Role,Batches,Scanned,Corrected\n';
+                state.activities.forEach(a => {
+                    csv += `"${a.date}","${a.workerName}","${a.role}",${a.batches},${a.scanned},${a.corrected}\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `archive_activity_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+                showToast('CSV Export successful');
+            } else if (format === 'xlsx') {
+                const wb = XLSX.utils.book_new();
+                const wsData = state.activities.map(a => ({
+                    Date: a.date,
+                    Worker: a.workerName,
+                    Role: a.role,
+                    BatchesTreated: a.batches,
+                    SheetsScanned: a.scanned,
+                    Corrections: a.corrected
+                }));
+                const ws = XLSX.utils.json_to_sheet(wsData);
+                XLSX.utils.book_append_sheet(wb, ws, "Activities");
+                
+                const wsWorkers = XLSX.utils.json_to_sheet(state.workers);
+                XLSX.utils.book_append_sheet(wb, wsWorkers, "Workers");
+
+                XLSX.writeFile(wb, `archive_workspace_${new Date().toISOString().slice(0,10)}.xlsx`);
+                showToast('XLSX Export successful');
+            }
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    if (file.name.endsWith('.json')) {
+                        const parsed = JSON.parse(content);
+                        if (parsed.workers && parsed.activities) {
+                            state.workers = parsed.workers;
+                            state.activities = parsed.activities;
+                            applyState();
+                            renderAll();
+                            closeSettingsModal();
+                            showToast('Data imported successfully');
+                        }
+                    } else {
+                        showToast('Please upload a valid workspace JSON export file.');
+                    }
+                } catch (err) {
+                    showToast('Error importing file');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Tab 1: Separate Individual Charts Logic ---
+        function updateStatsKPIs() {
+            let totalBatches = state.activities.reduce((sum, a) => sum + a.batches, 0);
+            let totalScanned = state.activities.reduce((sum, a) => sum + a.scanned, 0);
+            let totalCorrected = state.activities.reduce((sum, a) => sum + a.corrected, 0);
+            
+            document.getElementById('kpiBatchesTreated').textContent = totalBatches;
+            document.getElementById('kpiScannedToday').textContent = totalScanned.toLocaleString();
+            document.getElementById('kpiCorrections').textContent = totalCorrected;
+        }
+
+        function initCharts() {
+            const labels = ['Nov 2', 'Nov 3', 'Nov 4', 'Nov 5', 'Nov 6', 'Nov 7', 'Nov 8'];
+
+            // 1. Dedicated Physical Treatment Chart
+            const ctxPhysical = document.getElementById('chartPhysicalCanvas').getContext('2d');
+            physicalChartInstance = new Chart(ctxPhysical, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Batches Prepared',
+                        data: [25, 28, 30, 24, 29, 31, 28],
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 2. Dedicated Scanning Chart
+            const ctxScanning = document.getElementById('chartScanningCanvas').getContext('2d');
+            scanningChartInstance = new Chart(ctxScanning, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sheets Scanned',
+                        data: [14200, 15500, 13800, 16000, 14900, 15100, 12450],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 3. Dedicated Error Correction Chart
+            const ctxCorrection = document.getElementById('chartCorrectionCanvas').getContext('2d');
+            correctionChartInstance = new Chart(ctxCorrection, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Batches Corrected',
+                        data: [18, 22, 25, 19, 28, 30, 22],
+                        backgroundColor: '#a855f7',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        // --- Tab 2: Workers Profiles Logic ---
+        function renderWorkersGrid() {
+            const grid = document.getElementById('workersGrid');
+            grid.innerHTML = '';
+            const dict = i18n[state.lang] || i18n.en;
+
+            state.workers.forEach(w => {
+                let roleBadgeColor = 'bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300';
+                if (w.role === 'Scanning') roleBadgeColor = 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+                if (w.role === 'Error Detection') roleBadgeColor = 'bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+                if (w.role === 'Error Correction') roleBadgeColor = 'bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
+                if (w.role === 'Team Manager') roleBadgeColor = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between space-y-4';
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-700 font-bold text-lg flex items-center justify-center text-slate-700 dark:text-slate-200">
+                                ${w.name.charAt(0)}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-base">${w.name}</h3>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-1 rtl:space-x-reverse mt-0.5">
+                                    <span class="w-2 h-2 rounded-full ${w.status === 'Active' ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+                                    <span>${w.status}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-medium inline-block ${roleBadgeColor}">
+                            ${w.role}
+                        </span>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs">
+                        <button onclick="openEditWorkerModal(${w.id})" class="text-brand-600 dark:text-brand-400 font-medium hover:underline flex items-center space-x-1 rtl:space-x-reverse">
+                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                            <span>${dict.editWorker}</span>
+                        </button>
+                        <button onclick="deleteWorker(${w.id})" class="text-rose-600 font-medium hover:underline flex items-center space-x-1 rtl:space-x-reverse">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>${dict.deleteWorker}</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddWorkerModal() {
+            document.getElementById('editWorkerId').value = '';
+            document.getElementById('editWorkerName').value = '';
+            document.getElementById('editWorkerRole').value = 'Physical Treatment';
+            document.getElementById('editWorkerStatus').value = 'Active';
+            document.getElementById('workerModal').showModal();
+        }
+
+        function openEditWorkerModal(id) {
+            const worker = state.workers.find(w => w.id === id);
+            if (!worker) return;
+            document.getElementById('editWorkerId').value = worker.id;
+            document.getElementById('editWorkerName').value = worker.name;
+            document.getElementById('editWorkerRole').value = worker.role;
+            document.getElementById('editWorkerStatus').value = worker.status;
+            document.getElementById('workerModal').showModal();
+        }
+
+        function saveWorker(event) {
+            event.preventDefault();
+            const id = document.getElementById('editWorkerId').value;
+            const name = document.getElementById('editWorkerName').value;
+            const role = document.getElementById('editWorkerRole').value;
+            const status = document.getElementById('editWorkerStatus').value;
+
+            if (id) {
+                const worker = state.workers.find(w => w.id == id);
+                if (worker) {
+                    worker.name = name;
+                    worker.role = role;
+                    worker.status = status;
+                }
+                showToast('Worker profile updated successfully');
+            } else {
+                const newId = state.workers.length ? Math.max(...state.workers.map(w => w.id)) + 1 : 1;
+                state.workers.push({ id: newId, name, role, status });
+                showToast('New worker added successfully');
+            }
+            document.getElementById('workerModal').close();
+            renderWorkersGrid();
+        }
+
+        function deleteWorker(id) {
+            state.workers = state.workers.filter(w => w.id !== id);
+            renderWorkersGrid();
+            showToast('Worker removed');
+        }
+
+        // --- Tab 3: Activity Logs Table (Search, Filters, Sort, Pagination & Edit) ---
+        function handleActivityFilter() {
+            state.activityFilter.search = document.getElementById('activitySearch').value.toLowerCase();
+            state.activityFilter.role = document.getElementById('activityRoleFilter').value;
+            state.activityFilter.sortField = document.getElementById('activitySortField').value;
+            state.activityFilter.page = 1;
+            renderActivityTable();
+        }
+
+        function toggleSortDirection() {
+            state.activityFilter.sortDir = state.activityFilter.sortDir === 'asc' ? 'desc' : 'asc';
+            const icon = state.activityFilter.sortDir === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-narrow-wide';
+            document.getElementById('sortDirBtn').innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i>`;
+            lucide.createIcons();
+            renderActivityTable();
+        }
+
+        function getFilteredActivities() {
+            let list = [...state.activities];
+
+            // Filter search
+            if (state.activityFilter.search) {
+                const q = state.activityFilter.search;
+                list = list.filter(a => a.workerName.toLowerCase().includes(q) || a.role.toLowerCase().includes(q));
+            }
+
+            // Filter role
+            if (state.activityFilter.role !== 'ALL') {
+                list = list.filter(a => a.role === state.activityFilter.role);
+            }
+
+            // Sort
+            const field = state.activityFilter.sortField;
+            const dir = state.activityFilter.sortDir === 'asc' ? 1 : -1;
+            list.sort((a, b) => {
+                if (a[field] < b[field]) return -1 * dir;
+                if (a[field] > b[field]) return 1 * dir;
+                return 0;
+            });
+
+            return list;
+        }
+
+        function renderActivityTable() {
+            const tbody = document.getElementById('activityTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = getFilteredActivities();
+            const total = filtered.length;
+            const pageSize = state.activityFilter.pageSize;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+
+            if (state.activityFilter.page > totalPages) state.activityFilter.page = totalPages;
+            const startIdx = (state.activityFilter.page - 1) * pageSize;
+            const pageData = filtered.slice(startIdx, startIdx + pageSize);
+
+            pageData.forEach(a => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-700/30 transition';
+                tr.innerHTML = `
+                    <td class="p-4 font-medium text-xs">${a.date}</td>
+                    <td class="p-4 font-semibold">${a.workerName}</td>
+                    <td class="p-4"><span class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 font-medium">${a.role}</span></td>
+                    <td class="p-4 font-bold text-brand-600 dark:text-brand-400">${a.batches}</td>
+                    <td class="p-4 font-bold text-blue-600 dark:text-blue-400">${a.scanned.toLocaleString()}</td>
+                    <td class="p-4 font-bold text-purple-600 dark:text-purple-400">${a.corrected}</td>
+                    <td class="p-4 text-right">
+                        <div class="flex items-center justify-end space-x-2 rtl:space-x-reverse">
+                            <button onclick="openEditActivityModal(${a.id})" class="text-brand-600 hover:text-brand-700 dark:text-brand-400 p-1" title="Edit Activity">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteActivity(${a.id})" class="text-rose-500 hover:text-rose-700 p-1" title="Delete Activity">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update pagination UI
+            const endIdx = Math.min(startIdx + pageSize, total);
+            document.getElementById('paginationInfo').textContent = total > 0 ? `Showing ${startIdx + 1} to ${endIdx} of ${total} records` : 'No records found';
+            document.getElementById('currentPageNum').textContent = state.activityFilter.page;
+            document.getElementById('prevPageBtn').disabled = state.activityFilter.page <= 1;
+            document.getElementById('nextPageBtn').disabled = state.activityFilter.page >= totalPages;
+
+            lucide.createIcons();
+        }
+
+        function changePage(delta) {
+            state.activityFilter.page += delta;
+            renderActivityTable();
+        }
+
+        function openLogActivityModal() {
+            const dict = i18n[state.lang] || i18n.en;
+            document.getElementById('activityModalHeading').textContent = dict.modalActivityTitle;
+            document.getElementById('editActivityId').value = '';
+            document.getElementById('logDate').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('logBatches').value = 0;
+            document.getElementById('logScanned').value = 0;
+            document.getElementById('logCorrected').value = 0;
+
+            populateWorkerSelect();
+            document.getElementById('activityModal').showModal();
+        }
+
+        function openEditActivityModal(id) {
+            const dict = i18n[state.lang] || i18n.en;
+            const activity = state.activities.find(a => a.id === id);
+            if (!activity) return;
+
+            document.getElementById('activityModalHeading').textContent = dict.modalActivityEditTitle;
+            document.getElementById('editActivityId').value = activity.id;
+            document.getElementById('logDate').value = activity.date;
+            document.getElementById('logBatches').value = activity.batches;
+            document.getElementById('logScanned').value = activity.scanned;
+            document.getElementById('logCorrected').value = activity.corrected;
+
+            populateWorkerSelect(activity.workerId);
+            document.getElementById('activityModal').showModal();
+        }
+
+        function populateWorkerSelect(selectedWorkerId = null) {
+            const select = document.getElementById('logWorkerId');
+            select.innerHTML = '';
+            state.workers.forEach(w => {
+                const opt = document.createElement('option');
+                opt.value = w.id;
+                opt.textContent = `${w.name} (${w.role})`;
+                if (selectedWorkerId && w.id === selectedWorkerId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function saveActivity(event) {
+            event.preventDefault();
+            const editId = document.getElementById('editActivityId').value;
+            const date = document.getElementById('logDate').value;
+            const workerId = parseInt(document.getElementById('logWorkerId').value);
+            const worker = state.workers.find(w => w.id === workerId);
+            const batches = parseInt(document.getElementById('logBatches').value) || 0;
+            const scanned = parseInt(document.getElementById('logScanned').value) || 0;
+            const corrected = parseInt(document.getElementById('logCorrected').value) || 0;
+
+            if (editId) {
+                const act = state.activities.find(a => a.id == editId);
+                if (act) {
+                    act.date = date;
+                    act.workerId = workerId;
+                    act.workerName = worker ? worker.name : 'Unknown';
+                    act.role = worker ? worker.role : 'General';
+                    act.batches = batches;
+                    act.scanned = scanned;
+                    act.corrected = corrected;
+                }
+                showToast('Activity record updated successfully');
+            } else {
+                const newId = state.activities.length ? Math.max(...state.activities.map(a => a.id)) + 1 : 1;
+                state.activities.unshift({
+                    id: newId,
+                    date,
+                    workerId,
+                    workerName: worker ? worker.name : 'Unknown',
+                    role: worker ? worker.role : 'General',
+                    batches,
+                    scanned,
+                    corrected
+                });
+                showToast('Activity log recorded successfully');
+            }
+
+            document.getElementById('activityModal').close();
+            renderActivityTable();
+        }
+
+        function deleteActivity(id) {
+            state.activities = state.activities.filter(a => a.id !== id);
+            renderActivityTable();
+            showToast('Activity record removed');
+        }
+    </script>
+</body>
+</html>
