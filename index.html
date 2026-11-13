@@ -35,15 +35,9 @@
     <!-- SheetJS (xlsx) for Excel import/export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body {
-            font-family: 'Inter', 'Tajawal', sans-serif;
-        }
-        .rtl {
-            direction: rtl;
-        }
-        .ltr {
-            direction: ltr;
-        }
+        body { font-family: 'Inter', 'Tajawal', sans-serif; }
+        .rtl { direction: rtl; }
+        .ltr { direction: ltr; }
     </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-200">
@@ -76,18 +70,22 @@
             </div>
 
             <!-- Navigation Tabs (URLSearchParams based) -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 rtl:space-x-reverse border-t border-slate-100 dark:border-slate-700/50">
-                <button onclick="switchTab('stats')" id="nav-stats" class="py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 sm:space-x-8 rtl:space-x-reverse border-t border-slate-100 dark:border-slate-700/50 overflow-x-auto">
+                <button onclick="switchTab('stats')" id="nav-stats" class="py-3 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
                     <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
                     <span data-i18n="tabStats">Statistics & Charts</span>
                 </button>
-                <button onclick="switchTab('workers')" id="nav-workers" class="py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                <button onclick="switchTab('workers')" id="nav-workers" class="py-3 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
                     <i data-lucide="users" class="w-4 h-4"></i>
                     <span data-i18n="tabWorkers">Workers Profiles</span>
                 </button>
-                <button onclick="switchTab('activity')" id="nav-activity" class="py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                <button onclick="switchTab('activity')" id="nav-activity" class="py-3 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
                     <i data-lucide="activity" class="w-4 h-4"></i>
                     <span data-i18n="tabActivity">Workers Numbers & Activity</span>
+                </button>
+                <button onclick="switchTab('tracking')" id="nav-tracking" class="py-3 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <i data-lucide="file-check-2" class="w-4 h-4"></i>
+                    <span data-i18n="tabTracking">Item & Box Tracking</span>
                 </button>
             </div>
         </header>
@@ -97,8 +95,6 @@
             
             <!-- TAB 1: STATISTICS & CHARTS -->
             <div id="view-stats" class="space-y-6 hidden">
-                
-                <!-- Overview Stats Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
                         <div>
@@ -145,7 +141,6 @@
                     </div>
                 </div>
 
-                <!-- Archive Structure Quick Guide Banner -->
                 <div class="bg-gradient-to-r from-brand-600 to-indigo-700 text-white rounded-2xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between">
                     <div class="space-y-2 mb-4 md:mb-0">
                         <h2 class="text-xl font-bold flex items-center space-x-2 rtl:space-x-reverse">
@@ -162,53 +157,33 @@
                     </div>
                 </div>
 
-                <!-- Individual Dedicated Charts Section -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- 1. Physical Treatment Chart -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-base flex items-center space-x-2 rtl:space-x-reverse">
-                                <i data-lucide="layers" class="w-4 h-4 text-amber-500"></i>
-                                <span data-i18n="chartPhysical">Physical Treatment Batches</span>
-                            </h3>
-                        </div>
-                        <div class="h-64">
-                            <canvas id="chartPhysicalCanvas"></canvas>
-                        </div>
+                        <h3 class="font-bold text-base mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+                            <i data-lucide="layers" class="w-4 h-4 text-amber-500"></i>
+                            <span data-i18n="chartPhysical">Physical Treatment Batches</span>
+                        </h3>
+                        <div class="h-64"><canvas id="chartPhysicalCanvas"></canvas></div>
                     </div>
-
-                    <!-- 2. Scanning Chart -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-base flex items-center space-x-2 rtl:space-x-reverse">
-                                <i data-lucide="scan" class="w-4 h-4 text-blue-500"></i>
-                                <span data-i18n="chartScanning">Scanning Volume (Sheets)</span>
-                            </h3>
-                        </div>
-                        <div class="h-64">
-                            <canvas id="chartScanningCanvas"></canvas>
-                        </div>
+                        <h3 class="font-bold text-base mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+                            <i data-lucide="scan" class="w-4 h-4 text-blue-500"></i>
+                            <span data-i18n="chartScanning">Scanning Volume (Sheets)</span>
+                        </h3>
+                        <div class="h-64"><canvas id="chartScanningCanvas"></canvas></div>
                     </div>
-
-                    <!-- 3. Error Detection & Correction Chart -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-base flex items-center space-x-2 rtl:space-x-reverse">
-                                <i data-lucide="check-circle-2" class="w-4 h-4 text-purple-500"></i>
-                                <span data-i18n="chartCorrection">Errors & Corrections</span>
-                            </h3>
-                        </div>
-                        <div class="h-64">
-                            <canvas id="chartCorrectionCanvas"></canvas>
-                        </div>
+                        <h3 class="font-bold text-base mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-purple-500"></i>
+                            <span data-i18n="chartCorrection">Errors & Corrections</span>
+                        </h3>
+                        <div class="h-64"><canvas id="chartCorrectionCanvas"></canvas></div>
                     </div>
                 </div>
-
             </div>
 
             <!-- TAB 2: WORKERS PROFILES -->
             <div id="view-workers" class="space-y-6 hidden">
-                
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold" data-i18n="workersHeader">Team Profiles & Role Management</h2>
@@ -219,17 +194,11 @@
                         <span data-i18n="addWorkerBtn">Add Worker</span>
                     </button>
                 </div>
-
-                <!-- Workers Grid -->
-                <div id="workersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Populated dynamically -->
-                </div>
-
+                <div id="workersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
             </div>
 
             <!-- TAB 3: WORKERS NUMBERS & ACTIVITY -->
             <div id="view-activity" class="space-y-6 hidden">
-                
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold" data-i18n="activityHeader">Activity Logs & Performance Numbers</h2>
@@ -241,16 +210,12 @@
                     </button>
                 </div>
 
-                <!-- Filters, Search & Sorting Controls -->
                 <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto flex-1">
-                        <!-- Search Bar -->
                         <div class="relative flex-1 max-w-xs">
                             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 rtl:left-auto rtl:right-3 text-slate-400"></i>
                             <input type="text" id="activitySearch" oninput="handleActivityFilter()" placeholder="Search worker or role..." class="w-full pl-9 pr-3 rtl:pl-3 rtl:pr-9 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                         </div>
-
-                        <!-- Role Filter -->
                         <select id="activityRoleFilter" onchange="handleActivityFilter()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                             <option value="ALL" data-i18n="allRoles">All Roles</option>
                             <option value="Physical Treatment">Physical Treatment</option>
@@ -260,7 +225,6 @@
                         </select>
                     </div>
 
-                    <!-- Sort Controls -->
                     <div class="flex items-center space-x-2 rtl:space-x-reverse w-full sm:w-auto justify-end">
                         <span class="text-xs text-slate-500 dark:text-slate-400" data-i18n="sortBy">Sort:</span>
                         <select id="activitySortField" onchange="handleActivityFilter()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -276,7 +240,6 @@
                     </div>
                 </div>
 
-                <!-- Activity Table Card -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -291,13 +254,9 @@
                                     <th class="p-4 text-right" data-i18n="thActions">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="activityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm">
-                                <!-- Populated dynamically -->
-                            </tbody>
+                            <tbody id="activityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm"></tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination Controls -->
                     <div class="p-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
                         <span id="paginationInfo" class="text-slate-500 dark:text-slate-400">Showing 1 to 5 of 5 records</span>
                         <div class="flex items-center space-x-2 rtl:space-x-reverse">
@@ -307,7 +266,90 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- TAB 4: ARCHIVAL ITEM & BOX TRACKING (NEW) -->
+            <div id="view-tracking" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold" data-i18n="trackingHeader">Archival Item & Box Detailed Workflow</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="trackingSub">Track cases, box paper capacities, multi-stage handlers, error logs, and rescanning reasons.</p>
+                    </div>
+                    <button onclick="openAddTrackingModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium shadow-sm flex items-center space-x-2 rtl:space-x-reverse transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span data-i18n="addTrackingBtn">Add Box Record</span>
+                    </button>
+                </div>
+
+                <!-- Filters, Search, and Controls -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto flex-1">
+                        <div class="relative flex-1 max-w-xs">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 rtl:left-auto rtl:right-3 text-slate-400"></i>
+                            <input type="text" id="trackingSearch" oninput="handleTrackingFilter()" placeholder="Search Case, Box, Worker, or Reason..." class="w-full pl-9 pr-3 rtl:pl-3 rtl:pr-9 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+
+                        <select id="trackingStatusFilter" onchange="handleTrackingFilter()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="ALL" data-i18n="allStatuses">All QA Statuses</option>
+                            <option value="Passed QA">Passed QA</option>
+                            <option value="Rescan Required">Rescan Required</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Physical Repair Needed">Physical Repair Needed</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse w-full sm:w-auto justify-end">
+                        <span class="text-xs text-slate-500 dark:text-slate-400" data-i18n="sortBy">Sort:</span>
+                        <select id="trackingSortField" onchange="handleTrackingFilter()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="caseNo">Case No.</option>
+                            <option value="boxNo">Box No.</option>
+                            <option value="paperAmount">Paper Count</option>
+                            <option value="physDate">Physical Date</option>
+                            <option value="scanDate">Scan Date</option>
+                            <option value="status">QA Status</option>
+                        </select>
+                        <button onclick="toggleTrackingSortDir()" id="trackingSortDirBtn" class="p-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                            <i data-lucide="arrow-down-narrow-wide" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Detailed Tracking Table -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                    <th class="p-3 whitespace-nowrap">Case No.</th>
+                                    <th class="p-3 whitespace-nowrap">Box No.</th>
+                                    <th class="p-3 whitespace-nowrap">Paper Count</th>
+                                    <th class="p-3 whitespace-nowrap">Physical Treatment Worker</th>
+                                    <th class="p-3 whitespace-nowrap">Physical Treatment Date</th>
+                                    <th class="p-3 whitespace-nowrap">Scanning Operator</th>
+                                    <th class="p-3 whitespace-nowrap">Scanning Date</th>
+                                    <th class="p-3 whitespace-nowrap">Physical Error Detector</th>
+                                    <th class="p-3 whitespace-nowrap">Physical Detection Date</th>
+                                    <th class="p-3 whitespace-nowrap">Numerical Error Detector</th>
+                                    <th class="p-3 whitespace-nowrap">Numerical Detection Date</th>
+                                    <th class="p-3 whitespace-nowrap">Pages to Rescan (Page # & Reason)</th>
+                                    <th class="p-3 whitespace-nowrap">QA Status</th>
+                                    <th class="p-3 text-right whitespace-nowrap">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trackingTableBody" class="divide-y divide-slate-200 dark:divide-slate-700 text-xs sm:text-sm whitespace-nowrap"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="p-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                        <span id="trackingPaginationInfo" class="text-slate-500 dark:text-slate-400">Showing 1 to 5 of 5 records</span>
+                        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                            <button id="trackingPrevBtn" onclick="changeTrackingPage(-1)" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-medium disabled:opacity-50 transition" disabled>Previous</button>
+                            <span id="trackingCurrentPageNum" class="px-2 font-bold">1</span>
+                            <button id="trackingNextBtn" onclick="changeTrackingPage(1)" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-medium disabled:opacity-50 transition" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </main>
@@ -316,7 +358,6 @@
     <!-- CONSOLIDATED SETTINGS DIALOG (WITH SIDEBAR) -->
     <dialog id="settingsModal" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-0 w-full max-w-2xl backdrop:bg-slate-900/50 overflow-hidden">
         <div class="flex flex-col sm:flex-row h-full min-h-[420px]">
-            <!-- Sidebar Navigation -->
             <div class="w-full sm:w-48 bg-slate-50 dark:bg-slate-900/50 p-4 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 flex sm:flex-col space-x-2 sm:space-x-0 sm:space-y-1 rtl:space-x-reverse">
                 <div class="hidden sm:block pb-3 px-2 border-b border-slate-200 dark:border-slate-700 mb-2">
                     <h3 class="font-bold text-sm" data-i18n="settingsTitle">Settings</h3>
@@ -335,20 +376,18 @@
                 </button>
             </div>
 
-            <!-- Content Panel -->
             <div class="flex-1 p-6 flex flex-col justify-between">
                 <div>
-                    <!-- TAB 1: APPEARANCE -->
                     <div id="setTab-appearance" class="space-y-5">
                         <div>
                             <h4 class="font-bold text-base mb-1" data-i18n="themeSettingTitle">Theme Mode</h4>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mb-3" data-i18n="themeSettingDesc">Toggle between Light and Dark visual modes.</p>
                             <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                                <button onclick="setTheme('light')" id="btnThemeLight" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center space-x-2 rtl:space-x-reverse font-medium text-xs hover:border-brand-500 transition">
+                                <button onclick="setTheme('light')" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center space-x-2 rtl:space-x-reverse font-medium text-xs hover:border-brand-500 transition">
                                     <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
                                     <span>Light</span>
                                 </button>
-                                <button onclick="setTheme('dark')" id="btnThemeDark" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center space-x-2 rtl:space-x-reverse font-medium text-xs hover:border-brand-500 transition">
+                                <button onclick="setTheme('dark')" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center space-x-2 rtl:space-x-reverse font-medium text-xs hover:border-brand-500 transition">
                                     <i data-lucide="moon" class="w-4 h-4 text-indigo-400"></i>
                                     <span>Dark</span>
                                 </button>
@@ -368,7 +407,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: DATA AND BACKUP -->
                     <div id="setTab-data" class="space-y-4 hidden">
                         <h4 class="font-bold text-base" data-i18n="dataSettingTitle">Data Import & Export</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="dataSettingDesc">Download or restore workspace metrics, activity logs, and workers structure.</p>
@@ -405,11 +443,9 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: LANGUAGE -->
                     <div id="setTab-language" class="space-y-4 hidden">
                         <h4 class="font-bold text-base" data-i18n="langSettingTitle">Workspace Language</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="langSettingDesc">Choose your preferred workspace interface language.</p>
-
                         <div class="space-y-2 pt-2">
                             <button onclick="changeLang('en')" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between text-xs sm:text-sm font-medium transition">
                                 <span>English</span>
@@ -479,9 +515,7 @@
             </div>
             <div>
                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" data-i18n="actWorkerLabel">Worker</label>
-                <select id="logWorkerId" required class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    <!-- Populated dynamically -->
-                </select>
+                <select id="logWorkerId" required class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
             </div>
             <div class="grid grid-cols-3 gap-2">
                 <div>
@@ -500,6 +534,99 @@
             <div class="flex justify-end space-x-2 rtl:space-x-reverse pt-2">
                 <button type="button" onclick="document.getElementById('activityModal').close()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition" data-i18n="cancelBtn">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium transition" data-i18n="saveBtn">Save Log</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- MODAL: Add/Edit Item & Box Tracking -->
+    <dialog id="trackingModal" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 w-full max-w-2xl backdrop:bg-slate-900/50">
+        <form method="dialog" id="trackingForm" onsubmit="saveTracking(event)" class="space-y-4">
+            <h3 class="text-lg font-bold" id="trackingModalTitle">Add/Edit Box Tracking Record</h3>
+            <input type="hidden" id="editTrackingId">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Case Number</label>
+                    <input type="text" id="trackCaseNo" required placeholder="e.g., CASE-01" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Box Number (1-4)</label>
+                    <input type="text" id="trackBoxNo" required placeholder="e.g., BOX-02" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Paper Amount (450-700)</label>
+                    <input type="number" id="trackPaperAmount" min="1" max="1000" required placeholder="550" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Physical Treatment Handler</label>
+                    <select id="trackPhysWorker" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Physical Treatment Date</label>
+                    <input type="date" id="trackPhysDate" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Scanning Operator</label>
+                    <select id="trackScanWorker" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Scanning Date</label>
+                    <input type="date" id="trackScanDate" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Physical Errors Detector</label>
+                    <select id="trackPhysErrorWorker" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Physical Detection Date</label>
+                    <input type="date" id="trackPhysErrorDate" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Numerical Errors Detector</label>
+                    <select id="trackNumErrorWorker" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Numerical Detection Date</label>
+                    <input type="date" id="trackNumErrorDate" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">Pages to Rescan (Individual Page Number & Reason)</label>
+                    <button type="button" onclick="addRescanItemRow()" class="text-xs px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 font-medium hover:bg-brand-100 transition flex items-center space-x-1 rtl:space-x-reverse">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Add Page</span>
+                    </button>
+                </div>
+                <div id="rescanItemsContainer" class="space-y-2 max-h-36 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">QA Workflow Status</label>
+                <select id="trackStatus" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option value="Passed QA">Passed QA</option>
+                    <option value="Rescan Required">Rescan Required</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Physical Repair Needed">Physical Repair Needed</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse pt-2">
+                <button type="button" onclick="document.getElementById('trackingModal').close()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition" data-i18n="cancelBtn">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium transition" data-i18n="saveBtn">Save Record</button>
             </div>
         </form>
     </dialog>
@@ -537,6 +664,7 @@
                 tabStats: "Statistics & Charts",
                 tabWorkers: "Workers Profiles",
                 tabActivity: "Workers Numbers & Activity",
+                tabTracking: "Item & Box Tracking",
                 statTotalCases: "Total Cases / Boxes",
                 statSheetsScanned: "Sheets Scanned Today",
                 statBatchesTreated: "Physical Batches Treated",
@@ -553,7 +681,11 @@
                 activityHeader: "Activity Logs & Performance Numbers",
                 activitySub: "Track daily treated batches, sheets scanned, and error corrections per worker.",
                 logActivityBtn: "Log Daily Activity",
+                trackingHeader: "Archival Item & Box Detailed Workflow",
+                trackingSub: "Track cases, box paper capacities, multi-stage handlers, error logs, and rescanning reasons.",
+                addTrackingBtn: "Add Box Record",
                 allRoles: "All Roles",
+                allStatuses: "All QA Statuses",
                 sortBy: "Sort:",
                 sortDate: "Date",
                 sortWorker: "Worker",
@@ -581,15 +713,7 @@
                 actScannedLabel: "Scanned Sheets",
                 actCorrectedLabel: "Corrections",
                 deleteWorker: "Delete",
-                editWorker: "Edit",
-                rolePhysical: "Physical Treatment",
-                roleScanning: "Scanning",
-                roleDetection: "Error Detection",
-                roleCorrection: "Error Correction",
-                roleManager: "Team Manager",
-                statusActive: "Active",
-                statusBreak: "On Break",
-                statusLeave: "On Leave"
+                editWorker: "Edit"
             },
             ar: {
                 appTitle: "مساحة عمل رقمة الأرشيف",
@@ -614,6 +738,7 @@
                 tabStats: "الإحصاءات والرسوم البيانية",
                 tabWorkers: "ملفات العمال",
                 tabActivity: "أرقام ونشاط العمال",
+                tabTracking: "تتبع العناصر والصناديق",
                 statTotalCases: "إجمالي الحالات / الصناديق",
                 statSheetsScanned: "الأوراق الممسوحة اليوم",
                 statBatchesTreated: "الدفعات الفيزيائية المعالجة",
@@ -630,7 +755,11 @@
                 activityHeader: "سجلات النشاط وأرقام الأداء",
                 activitySub: "تتبع الدفعات المعالجة يومياً، الأوراق الممسوحة، وتصحيحات الأخطاء لكل عامل.",
                 logActivityBtn: "تسجيل نشاط يومي",
+                trackingHeader: "متابعة وتتبع الصناديق والعناصر",
+                trackingSub: "تتبع الحالات، سعة الصناديق، مسؤولي المراحل، سجلات الأخطاء وأسباب إعادة المسح.",
+                addTrackingBtn: "إضافة سجل صندوق",
                 allRoles: "جميع الأدوار",
+                allStatuses: "جميع حالات الجودة",
                 sortBy: "فرز حسب:",
                 sortDate: "التاريخ",
                 sortWorker: "العامل",
@@ -658,15 +787,7 @@
                 actScannedLabel: "الأوراق الممسوحة",
                 actCorrectedLabel: "التصحيحات",
                 deleteWorker: "حذف",
-                editWorker: "تعديل",
-                rolePhysical: "المعاملة الفيزيائية",
-                roleScanning: "المسح الضوئي",
-                roleDetection: "كشف الأخطاء",
-                roleCorrection: "تصحيح الأخطاء",
-                roleManager: "مدير الفريق",
-                statusActive: "نشط",
-                statusBreak: "في استراحة",
-                statusLeave: "في إجازة"
+                editWorker: "تعديل"
             },
             fr: {
                 appTitle: "Espace de Gestion des Archives Numérisées",
@@ -691,6 +812,7 @@
                 tabStats: "Statistiques & Graphiques",
                 tabWorkers: "Profils des Travailleurs",
                 tabActivity: "Activité & Chiffres des Travailleurs",
+                tabTracking: "Suivi des Éléments & Boîtes",
                 statTotalCases: "Total Cas / Boîtes",
                 statSheetsScanned: "Feuilles Scannées Aujourd'hui",
                 statBatchesTreated: "Lots Physiques Traités",
@@ -707,7 +829,11 @@
                 activityHeader: "Journaux d'Activité & Indicateurs",
                 activitySub: "Suivez les lots traités, feuilles scannées et corrections par travailleur.",
                 logActivityBtn: "Enregistrer l'Activité",
+                trackingHeader: "Suivi Détaillé des Boîtes & Éléments",
+                trackingSub: "Suivez la capacité des boîtes, intervenants, erreurs et motifs de numérisation.",
+                addTrackingBtn: "Ajouter un Enregistrement",
                 allRoles: "Tous les Rôles",
+                allStatuses: "Tous les Statuts QA",
                 sortBy: "Trier par:",
                 sortDate: "Date",
                 sortWorker: "Travailleur",
@@ -735,15 +861,7 @@
                 actScannedLabel: "Feuilles Scannées",
                 actCorrectedLabel: "Corrections",
                 deleteWorker: "Supprimer",
-                editWorker: "Modifier",
-                rolePhysical: "Traitement Physique",
-                roleScanning: "Numérisation",
-                roleDetection: "Détection d'Erreurs",
-                roleCorrection: "Correction d'Erreurs",
-                roleManager: "Manager d'Équipe",
-                statusActive: "Actif",
-                statusBreak: "En Pause",
-                statusLeave: "En Congé"
+                editWorker: "Modifier"
             }
         };
 
@@ -778,26 +896,93 @@
                 { id: 2, date: '2026-11-08', workerId: 2, workerName: 'Sarah Connor', role: 'Physical Treatment', batches: 6, scanned: 0, corrected: 0 },
                 { id: 3, date: '2026-11-08', workerId: 5, workerName: 'John Wick', role: 'Scanning', batches: 0, scanned: 14200, corrected: 0 },
                 { id: 4, date: '2026-11-08', workerId: 6, workerName: 'Marie Curie', role: 'Error Detection', batches: 0, scanned: 0, corrected: 18 },
-                { id: 5, date: '2026-11-08', workerId: 7, workerName: 'Alan Turing', role: 'Error Correction', batches: 0, scanned: 0, corrected: 24 },
-                { id: 6, date: '2026-11-07', workerId: 3, workerName: 'Karim Benzema', role: 'Physical Treatment', batches: 8, scanned: 0, corrected: 0 },
-                { id: 7, date: '2026-11-07', workerId: 5, workerName: 'John Wick', role: 'Scanning', batches: 0, scanned: 15100, corrected: 0 }
+                { id: 5, date: '2026-11-08', workerId: 7, workerName: 'Alan Turing', role: 'Error Correction', batches: 0, scanned: 0, corrected: 24 }
             ],
-            // Table state
-            activityFilter: {
-                search: '',
-                role: 'ALL',
-                sortField: 'date',
-                sortDir: 'desc',
-                page: 1,
-                pageSize: 5
-            }
+            // TAB 4 DATA: Item & Box Tracking Logs
+            trackings: [
+                {
+                    id: 1,
+                    caseNo: 'CASE-01',
+                    boxNo: 'BOX-01',
+                    paperAmount: 580,
+                    physWorker: 'Ahmed Benali',
+                    physDate: '2026-11-05',
+                    scanWorker: 'John Wick',
+                    scanDate: '2026-11-06',
+                    physErrorWorker: 'Marie Curie',
+                    physErrorDate: '2026-11-06',
+                    numErrorWorker: 'Alan Turing',
+                    numErrorDate: '2026-11-07',
+                    rescanItems: [
+                        { page: 14, reason: 'Superimposed' },
+                        { page: 89, reason: 'Superimposed' },
+                        { page: 212, reason: 'Curling or Wavy Edges' },
+                        { page: 405, reason: 'Couching' }
+                    ],
+                    status: 'Rescan Required'
+                },
+                {
+                    id: 2,
+                    caseNo: 'CASE-01',
+                    boxNo: 'BOX-02',
+                    paperAmount: 640,
+                    physWorker: 'Sarah Connor',
+                    physDate: '2026-11-05',
+                    scanWorker: 'John Wick',
+                    scanDate: '2026-11-06',
+                    physErrorWorker: 'Marie Curie',
+                    physErrorDate: '2026-11-07',
+                    numErrorWorker: 'Alan Turing',
+                    numErrorDate: '2026-11-07',
+                    rescanItems: [],
+                    status: 'Passed QA'
+                },
+                {
+                    id: 3,
+                    caseNo: 'CASE-01',
+                    boxNo: 'BOX-03',
+                    paperAmount: 490,
+                    physWorker: 'Karim Benzema',
+                    physDate: '2026-11-07',
+                    scanWorker: 'John Wick',
+                    scanDate: '2026-11-08',
+                    physErrorWorker: 'Marie Curie',
+                    physErrorDate: '2026-11-08',
+                    numErrorWorker: 'Alan Turing',
+                    numErrorDate: '2026-11-08',
+                    rescanItems: [
+                        { page: 42, reason: 'Torn Paper' },
+                        { page: 118, reason: 'Torn Paper' }
+                    ],
+                    status: 'Physical Repair Needed'
+                },
+                {
+                    id: 4,
+                    caseNo: 'CASE-02',
+                    boxNo: 'BOX-01',
+                    paperAmount: 680,
+                    physWorker: 'Fatima Zohra',
+                    physDate: '2026-11-08',
+                    scanWorker: 'John Wick',
+                    scanDate: '2026-11-08',
+                    physErrorWorker: 'Marie Curie',
+                    physErrorDate: '2026-11-08',
+                    numErrorWorker: 'Pending',
+                    numErrorDate: 'Pending',
+                    rescanItems: [],
+                    status: 'In Progress'
+                }
+            ],
+            // Filters
+            activityFilter: { search: '', role: 'ALL', sortField: 'date', sortDir: 'desc', page: 1, pageSize: 5 },
+            trackingFilter: { search: '', status: 'ALL', sortField: 'caseNo', sortDir: 'asc', page: 1, pageSize: 5 }
         };
 
         let physicalChartInstance = null;
         let scanningChartInstance = null;
         let correctionChartInstance = null;
 
-        // --- Initialization & URLSearchParams Sync ---
+        // --- Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
             parseUrlParams();
             applyState();
@@ -819,30 +1004,21 @@
             params.set('theme', state.theme);
             params.set('accent', state.accent);
             params.set('lang', state.lang);
-            const newRelativePathQuery = window.location.pathname + '?' + params.toString();
-            history.pushState(null, '', newRelativePathQuery);
+            history.pushState(null, '', window.location.pathname + '?' + params.toString());
         }
 
-        // --- State Application & Rendering ---
         function applyState() {
-            // Theme
             const html = document.documentElement;
-            if (state.theme === 'dark') {
-                html.classList.add('dark');
-            } else {
-                html.classList.remove('dark');
-            }
+            if (state.theme === 'dark') html.classList.add('dark');
+            else html.classList.remove('dark');
 
-            // Accent Color
             const palette = accents[state.accent] || accents.indigo;
-            const root = document.documentElement;
-            root.style.setProperty('--brand-50', palette[50]);
-            root.style.setProperty('--brand-100', palette[100]);
-            root.style.setProperty('--brand-500', palette[500]);
-            root.style.setProperty('--brand-600', palette[600]);
-            root.style.setProperty('--brand-700', palette[700]);
+            html.style.setProperty('--brand-50', palette[50]);
+            html.style.setProperty('--brand-100', palette[100]);
+            html.style.setProperty('--brand-500', palette[500]);
+            html.style.setProperty('--brand-600', palette[600]);
+            html.style.setProperty('--brand-700', palette[700]);
 
-            // Language & Direction
             if (state.lang === 'ar') {
                 html.setAttribute('dir', 'rtl');
                 html.setAttribute('lang', 'ar');
@@ -851,13 +1027,11 @@
                 html.setAttribute('lang', state.lang);
             }
 
-            // Settings dialog language checks
             ['en', 'ar', 'fr'].forEach(l => {
                 const check = document.getElementById(`langCheck-${l}`);
                 if (check) check.style.opacity = state.lang === l ? '1' : '0';
             });
 
-            // Translate Static UI elements
             translateUI();
             lucide.createIcons();
         }
@@ -866,9 +1040,7 @@
             const dict = i18n[state.lang] || i18n.en;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (dict[key]) {
-                    el.textContent = dict[key];
-                }
+                if (dict[key]) el.textContent = dict[key];
             });
         }
 
@@ -879,15 +1051,14 @@
         }
 
         function renderAll() {
-            // Highlight active tab button
-            ['stats', 'workers', 'activity'].forEach(t => {
+            ['stats', 'workers', 'activity', 'tracking'].forEach(t => {
                 const btn = document.getElementById(`nav-${t}`);
                 const view = document.getElementById(`view-${t}`);
                 if (t === state.tab) {
-                    btn.className = "py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-brand-600 text-brand-600 dark:text-brand-400";
+                    btn.className = "py-3 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 rtl:space-x-reverse transition border-brand-600 text-brand-600 dark:text-brand-400";
                     view.classList.remove('hidden');
                 } else {
-                    btn.className = "py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200";
+                    btn.className = "py-3 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 rtl:space-x-reverse transition border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200";
                     view.classList.add('hidden');
                 }
             });
@@ -901,20 +1072,19 @@
                 renderWorkersGrid();
             } else if (state.tab === 'activity') {
                 renderActivityTable();
+            } else if (state.tab === 'tracking') {
+                renderTrackingTable();
             }
 
             lucide.createIcons();
         }
 
-        // --- Settings Dialog Logic ---
+        // --- Settings Dialog ---
         function openSettingsModal() {
             switchSettingsTab(state.settingsTab || 'appearance');
             document.getElementById('settingsModal').showModal();
         }
-
-        function closeSettingsModal() {
-            document.getElementById('settingsModal').close();
-        }
+        function closeSettingsModal() { document.getElementById('settingsModal').close(); }
 
         function switchSettingsTab(tabName) {
             state.settingsTab = tabName;
@@ -931,72 +1101,42 @@
             });
         }
 
-        function setTheme(t) {
-            state.theme = t;
-            updateUrlParams();
-            applyState();
-        }
-
-        function changeAccent(colorName) {
-            state.accent = colorName;
-            updateUrlParams();
-            applyState();
-        }
-
-        function changeLang(langCode) {
-            state.lang = langCode;
-            updateUrlParams();
-            applyState();
-        }
+        function setTheme(t) { state.theme = t; updateUrlParams(); applyState(); }
+        function changeAccent(c) { state.accent = c; updateUrlParams(); applyState(); }
+        function changeLang(l) { state.lang = l; updateUrlParams(); applyState(); }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').textContent = msg;
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
-        // --- Data Import & Export ---
+        // --- Data Import/Export ---
         function exportData(format) {
-            const dataStr = JSON.stringify(state, null, 2);
             if (format === 'json') {
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = URL.createObjectURL(blob);
                 a.download = `archive_workspace_${new Date().toISOString().slice(0,10)}.json`;
                 a.click();
                 showToast('JSON Export successful');
             } else if (format === 'csv') {
-                let csv = 'Date,Worker,Role,Batches,Scanned,Corrected\n';
-                state.activities.forEach(a => {
-                    csv += `"${a.date}","${a.workerName}","${a.role}",${a.batches},${a.scanned},${a.corrected}\n`;
+                let csv = 'CaseNo,BoxNo,PaperAmount,PhysWorker,PhysDate,ScanWorker,ScanDate,Status\n';
+                state.trackings.forEach(t => {
+                    csv += `"${t.caseNo}","${t.boxNo}",${t.paperAmount},"${t.physWorker}","${t.physDate}","${t.scanWorker}","${t.scanDate}","${t.status}"\n`;
                 });
                 const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = `archive_activity_${new Date().toISOString().slice(0,10)}.csv`;
+                a.href = URL.createObjectURL(blob);
+                a.download = `box_tracking_${new Date().toISOString().slice(0,10)}.csv`;
                 a.click();
                 showToast('CSV Export successful');
             } else if (format === 'xlsx') {
                 const wb = XLSX.utils.book_new();
-                const wsData = state.activities.map(a => ({
-                    Date: a.date,
-                    Worker: a.workerName,
-                    Role: a.role,
-                    BatchesTreated: a.batches,
-                    SheetsScanned: a.scanned,
-                    Corrections: a.corrected
-                }));
-                const ws = XLSX.utils.json_to_sheet(wsData);
-                XLSX.utils.book_append_sheet(wb, ws, "Activities");
-                
-                const wsWorkers = XLSX.utils.json_to_sheet(state.workers);
-                XLSX.utils.book_append_sheet(wb, wsWorkers, "Workers");
-
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(state.trackings), "BoxTracking");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(state.activities), "Activities");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(state.workers), "Workers");
                 XLSX.writeFile(wb, `archive_workspace_${new Date().toISOString().slice(0,10)}.xlsx`);
                 showToast('XLSX Export successful');
             }
@@ -1008,33 +1148,26 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const content = e.target.result;
-                    if (file.name.endsWith('.json')) {
-                        const parsed = JSON.parse(content);
-                        if (parsed.workers && parsed.activities) {
-                            state.workers = parsed.workers;
-                            state.activities = parsed.activities;
-                            applyState();
-                            renderAll();
-                            closeSettingsModal();
-                            showToast('Data imported successfully');
-                        }
-                    } else {
-                        showToast('Please upload a valid workspace JSON export file.');
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.workers && parsed.activities) {
+                        state.workers = parsed.workers;
+                        state.activities = parsed.activities;
+                        if (parsed.trackings) state.trackings = parsed.trackings;
+                        applyState();
+                        renderAll();
+                        closeSettingsModal();
+                        showToast('Data imported successfully');
                     }
-                } catch (err) {
-                    showToast('Error importing file');
-                }
+                } catch (err) { showToast('Error importing file'); }
             };
             reader.readAsText(file);
         }
 
-        // --- Tab 1: Separate Individual Charts Logic ---
+        // --- Tab 1 KPI & Charts ---
         function updateStatsKPIs() {
-            let totalBatches = state.activities.reduce((sum, a) => sum + a.batches, 0);
-            let totalScanned = state.activities.reduce((sum, a) => sum + a.scanned, 0);
-            let totalCorrected = state.activities.reduce((sum, a) => sum + a.corrected, 0);
-            
+            let totalBatches = state.activities.reduce((s, a) => s + a.batches, 0);
+            let totalScanned = state.activities.reduce((s, a) => s + a.scanned, 0);
+            let totalCorrected = state.activities.reduce((s, a) => s + a.corrected, 0);
             document.getElementById('kpiBatchesTreated').textContent = totalBatches;
             document.getElementById('kpiScannedToday').textContent = totalScanned.toLocaleString();
             document.getElementById('kpiCorrections').textContent = totalCorrected;
@@ -1042,117 +1175,58 @@
 
         function initCharts() {
             const labels = ['Nov 2', 'Nov 3', 'Nov 4', 'Nov 5', 'Nov 6', 'Nov 7', 'Nov 8'];
-
-            // 1. Dedicated Physical Treatment Chart
-            const ctxPhysical = document.getElementById('chartPhysicalCanvas').getContext('2d');
-            physicalChartInstance = new Chart(ctxPhysical, {
+            physicalChartInstance = new Chart(document.getElementById('chartPhysicalCanvas').getContext('2d'), {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Batches Prepared',
-                        data: [25, 28, 30, 24, 29, 31, 28],
-                        backgroundColor: '#f59e0b',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
-                }
+                data: { labels, datasets: [{ label: 'Batches', data: [25, 28, 30, 24, 29, 31, 28], backgroundColor: '#f59e0b', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-
-            // 2. Dedicated Scanning Chart
-            const ctxScanning = document.getElementById('chartScanningCanvas').getContext('2d');
-            scanningChartInstance = new Chart(ctxScanning, {
+            scanningChartInstance = new Chart(document.getElementById('chartScanningCanvas').getContext('2d'), {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Sheets Scanned',
-                        data: [14200, 15500, 13800, 16000, 14900, 15100, 12450],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
-                }
+                data: { labels, datasets: [{ label: 'Sheets', data: [14200, 15500, 13800, 16000, 14900, 15100, 12450], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 3, fill: true, tension: 0.3 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-
-            // 3. Dedicated Error Correction Chart
-            const ctxCorrection = document.getElementById('chartCorrectionCanvas').getContext('2d');
-            correctionChartInstance = new Chart(ctxCorrection, {
+            correctionChartInstance = new Chart(document.getElementById('chartCorrectionCanvas').getContext('2d'), {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Batches Corrected',
-                        data: [18, 22, 25, 19, 28, 30, 22],
-                        backgroundColor: '#a855f7',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
-                }
+                data: { labels, datasets: [{ label: 'Corrections', data: [18, 22, 25, 19, 28, 30, 22], backgroundColor: '#a855f7', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        // --- Tab 2: Workers Profiles Logic ---
+        // --- Tab 2 Workers ---
         function renderWorkersGrid() {
             const grid = document.getElementById('workersGrid');
             grid.innerHTML = '';
             const dict = i18n[state.lang] || i18n.en;
 
             state.workers.forEach(w => {
-                let roleBadgeColor = 'bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300';
-                if (w.role === 'Scanning') roleBadgeColor = 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
-                if (w.role === 'Error Detection') roleBadgeColor = 'bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
-                if (w.role === 'Error Correction') roleBadgeColor = 'bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
-                if (w.role === 'Team Manager') roleBadgeColor = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+                let badgeClass = 'bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300';
+                if (w.role === 'Scanning') badgeClass = 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+                if (w.role === 'Error Detection') badgeClass = 'bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+                if (w.role === 'Error Correction') badgeClass = 'bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
+                if (w.role === 'Team Manager') badgeClass = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
 
                 const card = document.createElement('div');
                 card.className = 'bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between space-y-4';
                 card.innerHTML = `
                     <div class="flex items-start justify-between">
                         <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                            <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-700 font-bold text-lg flex items-center justify-center text-slate-700 dark:text-slate-200">
-                                ${w.name.charAt(0)}
-                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-700 font-bold text-lg flex items-center justify-center">${w.name.charAt(0)}</div>
                             <div>
                                 <h3 class="font-bold text-base">${w.name}</h3>
-                                <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-1 rtl:space-x-reverse mt-0.5">
+                                <span class="text-xs text-slate-500 flex items-center space-x-1 rtl:space-x-reverse mt-0.5">
                                     <span class="w-2 h-2 rounded-full ${w.status === 'Active' ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
                                     <span>${w.status}</span>
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-medium inline-block ${roleBadgeColor}">
-                            ${w.role}
-                        </span>
-                    </div>
+                    <div><span class="text-xs px-2.5 py-1 rounded-lg font-medium inline-block ${badgeClass}">${w.role}</span></div>
                     <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs">
-                        <button onclick="openEditWorkerModal(${w.id})" class="text-brand-600 dark:text-brand-400 font-medium hover:underline flex items-center space-x-1 rtl:space-x-reverse">
-                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                            <span>${dict.editWorker}</span>
+                        <button onclick="openEditWorkerModal(${w.id})" class="text-brand-600 font-medium hover:underline flex items-center space-x-1 rtl:space-x-reverse">
+                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i><span>${dict.editWorker}</span>
                         </button>
                         <button onclick="deleteWorker(${w.id})" class="text-rose-600 font-medium hover:underline flex items-center space-x-1 rtl:space-x-reverse">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            <span>${dict.deleteWorker}</span>
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>${dict.deleteWorker}</span>
                         </button>
                     </div>
                 `;
@@ -1169,34 +1243,30 @@
         }
 
         function openEditWorkerModal(id) {
-            const worker = state.workers.find(w => w.id === id);
-            if (!worker) return;
-            document.getElementById('editWorkerId').value = worker.id;
-            document.getElementById('editWorkerName').value = worker.name;
-            document.getElementById('editWorkerRole').value = worker.role;
-            document.getElementById('editWorkerStatus').value = worker.status;
+            const w = state.workers.find(x => x.id === id);
+            if (!w) return;
+            document.getElementById('editWorkerId').value = w.id;
+            document.getElementById('editWorkerName').value = w.name;
+            document.getElementById('editWorkerRole').value = w.role;
+            document.getElementById('editWorkerStatus').value = w.status;
             document.getElementById('workerModal').showModal();
         }
 
-        function saveWorker(event) {
-            event.preventDefault();
+        function saveWorker(e) {
+            e.preventDefault();
             const id = document.getElementById('editWorkerId').value;
             const name = document.getElementById('editWorkerName').value;
             const role = document.getElementById('editWorkerRole').value;
             const status = document.getElementById('editWorkerStatus').value;
 
             if (id) {
-                const worker = state.workers.find(w => w.id == id);
-                if (worker) {
-                    worker.name = name;
-                    worker.role = role;
-                    worker.status = status;
-                }
-                showToast('Worker profile updated successfully');
+                const w = state.workers.find(x => x.id == id);
+                if (w) { w.name = name; w.role = role; w.status = status; }
+                showToast('Worker profile updated');
             } else {
                 const newId = state.workers.length ? Math.max(...state.workers.map(w => w.id)) + 1 : 1;
                 state.workers.push({ id: newId, name, role, status });
-                showToast('New worker added successfully');
+                showToast('Worker added');
             }
             document.getElementById('workerModal').close();
             renderWorkersGrid();
@@ -1208,7 +1278,7 @@
             showToast('Worker removed');
         }
 
-        // --- Tab 3: Activity Logs Table (Search, Filters, Sort, Pagination & Edit) ---
+        // --- Tab 3 Activity Table ---
         function handleActivityFilter() {
             state.activityFilter.search = document.getElementById('activitySearch').value.toLowerCase();
             state.activityFilter.role = document.getElementById('activityRoleFilter').value;
@@ -1219,133 +1289,91 @@
 
         function toggleSortDirection() {
             state.activityFilter.sortDir = state.activityFilter.sortDir === 'asc' ? 'desc' : 'asc';
-            const icon = state.activityFilter.sortDir === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-narrow-wide';
-            document.getElementById('sortDirBtn').innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i>`;
+            document.getElementById('sortDirBtn').innerHTML = `<i data-lucide="${state.activityFilter.sortDir === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-narrow-wide'}" class="w-4 h-4"></i>`;
             lucide.createIcons();
             renderActivityTable();
-        }
-
-        function getFilteredActivities() {
-            let list = [...state.activities];
-
-            // Filter search
-            if (state.activityFilter.search) {
-                const q = state.activityFilter.search;
-                list = list.filter(a => a.workerName.toLowerCase().includes(q) || a.role.toLowerCase().includes(q));
-            }
-
-            // Filter role
-            if (state.activityFilter.role !== 'ALL') {
-                list = list.filter(a => a.role === state.activityFilter.role);
-            }
-
-            // Sort
-            const field = state.activityFilter.sortField;
-            const dir = state.activityFilter.sortDir === 'asc' ? 1 : -1;
-            list.sort((a, b) => {
-                if (a[field] < b[field]) return -1 * dir;
-                if (a[field] > b[field]) return 1 * dir;
-                return 0;
-            });
-
-            return list;
         }
 
         function renderActivityTable() {
             const tbody = document.getElementById('activityTableBody');
             tbody.innerHTML = '';
+            let list = [...state.activities];
 
-            const filtered = getFilteredActivities();
-            const total = filtered.length;
+            if (state.activityFilter.search) {
+                const q = state.activityFilter.search;
+                list = list.filter(a => a.workerName.toLowerCase().includes(q) || a.role.toLowerCase().includes(q));
+            }
+            if (state.activityFilter.role !== 'ALL') {
+                list = list.filter(a => a.role === state.activityFilter.role);
+            }
+
+            const field = state.activityFilter.sortField;
+            const dir = state.activityFilter.sortDir === 'asc' ? 1 : -1;
+            list.sort((a, b) => (a[field] < b[field] ? -1 * dir : a[field] > b[field] ? 1 * dir : 0));
+
+            const total = list.length;
             const pageSize = state.activityFilter.pageSize;
             const totalPages = Math.ceil(total / pageSize) || 1;
-
             if (state.activityFilter.page > totalPages) state.activityFilter.page = totalPages;
+
             const startIdx = (state.activityFilter.page - 1) * pageSize;
-            const pageData = filtered.slice(startIdx, startIdx + pageSize);
+            const pageData = list.slice(startIdx, startIdx + pageSize);
 
             pageData.forEach(a => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-700/30 transition';
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-700/30 transition whitespace-nowrap';
                 tr.innerHTML = `
-                    <td class="p-4 font-medium text-xs">${a.date}</td>
-                    <td class="p-4 font-semibold">${a.workerName}</td>
-                    <td class="p-4"><span class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 font-medium">${a.role}</span></td>
-                    <td class="p-4 font-bold text-brand-600 dark:text-brand-400">${a.batches}</td>
-                    <td class="p-4 font-bold text-blue-600 dark:text-blue-400">${a.scanned.toLocaleString()}</td>
-                    <td class="p-4 font-bold text-purple-600 dark:text-purple-400">${a.corrected}</td>
-                    <td class="p-4 text-right">
+                    <td class="p-4 font-medium text-xs whitespace-nowrap">${a.date}</td>
+                    <td class="p-4 font-semibold whitespace-nowrap">${a.workerName}</td>
+                    <td class="p-4 whitespace-nowrap"><span class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 font-medium whitespace-nowrap">${a.role}</span></td>
+                    <td class="p-4 font-bold text-brand-600 dark:text-brand-400 whitespace-nowrap">${a.batches}</td>
+                    <td class="p-4 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${a.scanned.toLocaleString()}</td>
+                    <td class="p-4 font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">${a.corrected}</td>
+                    <td class="p-4 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end space-x-2 rtl:space-x-reverse">
-                            <button onclick="openEditActivityModal(${a.id})" class="text-brand-600 hover:text-brand-700 dark:text-brand-400 p-1" title="Edit Activity">
-                                <i data-lucide="edit-3" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteActivity(${a.id})" class="text-rose-500 hover:text-rose-700 p-1" title="Delete Activity">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <button onclick="openEditActivityModal(${a.id})" class="text-brand-600 dark:text-brand-400 p-1"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteActivity(${a.id})" class="text-rose-500 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Update pagination UI
-            const endIdx = Math.min(startIdx + pageSize, total);
-            document.getElementById('paginationInfo').textContent = total > 0 ? `Showing ${startIdx + 1} to ${endIdx} of ${total} records` : 'No records found';
+            document.getElementById('paginationInfo').textContent = total > 0 ? `Showing ${startIdx + 1} to ${Math.min(startIdx + pageSize, total)} of ${total} records` : 'No records found';
             document.getElementById('currentPageNum').textContent = state.activityFilter.page;
             document.getElementById('prevPageBtn').disabled = state.activityFilter.page <= 1;
             document.getElementById('nextPageBtn').disabled = state.activityFilter.page >= totalPages;
-
             lucide.createIcons();
         }
 
-        function changePage(delta) {
-            state.activityFilter.page += delta;
-            renderActivityTable();
-        }
+        function changePage(d) { state.activityFilter.page += d; renderActivityTable(); }
 
         function openLogActivityModal() {
-            const dict = i18n[state.lang] || i18n.en;
-            document.getElementById('activityModalHeading').textContent = dict.modalActivityTitle;
+            document.getElementById('activityModalHeading').textContent = i18n[state.lang].modalActivityTitle;
             document.getElementById('editActivityId').value = '';
             document.getElementById('logDate').value = new Date().toISOString().slice(0, 10);
             document.getElementById('logBatches').value = 0;
             document.getElementById('logScanned').value = 0;
             document.getElementById('logCorrected').value = 0;
-
-            populateWorkerSelect();
+            populateWorkerSelect('logWorkerId');
             document.getElementById('activityModal').showModal();
         }
 
         function openEditActivityModal(id) {
-            const dict = i18n[state.lang] || i18n.en;
-            const activity = state.activities.find(a => a.id === id);
-            if (!activity) return;
-
-            document.getElementById('activityModalHeading').textContent = dict.modalActivityEditTitle;
-            document.getElementById('editActivityId').value = activity.id;
-            document.getElementById('logDate').value = activity.date;
-            document.getElementById('logBatches').value = activity.batches;
-            document.getElementById('logScanned').value = activity.scanned;
-            document.getElementById('logCorrected').value = activity.corrected;
-
-            populateWorkerSelect(activity.workerId);
+            const act = state.activities.find(a => a.id === id);
+            if (!act) return;
+            document.getElementById('activityModalHeading').textContent = i18n[state.lang].modalActivityEditTitle;
+            document.getElementById('editActivityId').value = act.id;
+            document.getElementById('logDate').value = act.date;
+            document.getElementById('logBatches').value = act.batches;
+            document.getElementById('logScanned').value = act.scanned;
+            document.getElementById('logCorrected').value = act.corrected;
+            populateWorkerSelect('logWorkerId', act.workerId);
             document.getElementById('activityModal').showModal();
         }
 
-        function populateWorkerSelect(selectedWorkerId = null) {
-            const select = document.getElementById('logWorkerId');
-            select.innerHTML = '';
-            state.workers.forEach(w => {
-                const opt = document.createElement('option');
-                opt.value = w.id;
-                opt.textContent = `${w.name} (${w.role})`;
-                if (selectedWorkerId && w.id === selectedWorkerId) opt.selected = true;
-                select.appendChild(opt);
-            });
-        }
-
-        function saveActivity(event) {
-            event.preventDefault();
+        function saveActivity(e) {
+            e.preventDefault();
             const editId = document.getElementById('editActivityId').value;
             const date = document.getElementById('logDate').value;
             const workerId = parseInt(document.getElementById('logWorkerId').value);
@@ -1357,30 +1385,17 @@
             if (editId) {
                 const act = state.activities.find(a => a.id == editId);
                 if (act) {
-                    act.date = date;
-                    act.workerId = workerId;
+                    act.date = date; act.workerId = workerId;
                     act.workerName = worker ? worker.name : 'Unknown';
                     act.role = worker ? worker.role : 'General';
-                    act.batches = batches;
-                    act.scanned = scanned;
-                    act.corrected = corrected;
+                    act.batches = batches; act.scanned = scanned; act.corrected = corrected;
                 }
-                showToast('Activity record updated successfully');
+                showToast('Activity record updated');
             } else {
                 const newId = state.activities.length ? Math.max(...state.activities.map(a => a.id)) + 1 : 1;
-                state.activities.unshift({
-                    id: newId,
-                    date,
-                    workerId,
-                    workerName: worker ? worker.name : 'Unknown',
-                    role: worker ? worker.role : 'General',
-                    batches,
-                    scanned,
-                    corrected
-                });
-                showToast('Activity log recorded successfully');
+                state.activities.unshift({ id: newId, date, workerId, workerName: worker ? worker.name : 'Unknown', role: worker ? worker.role : 'General', batches, scanned, corrected });
+                showToast('Activity logged');
             }
-
             document.getElementById('activityModal').close();
             renderActivityTable();
         }
@@ -1389,6 +1404,239 @@
             state.activities = state.activities.filter(a => a.id !== id);
             renderActivityTable();
             showToast('Activity record removed');
+        }
+
+        // --- Tab 4 Item & Box Tracking Logic ---
+        function handleTrackingFilter() {
+            state.trackingFilter.search = document.getElementById('trackingSearch').value.toLowerCase();
+            state.trackingFilter.status = document.getElementById('trackingStatusFilter').value;
+            state.trackingFilter.sortField = document.getElementById('trackingSortField').value;
+            state.trackingFilter.page = 1;
+            renderTrackingTable();
+        }
+
+        function toggleTrackingSortDir() {
+            state.trackingFilter.sortDir = state.trackingFilter.sortDir === 'asc' ? 'desc' : 'asc';
+            document.getElementById('trackingSortDirBtn').innerHTML = `<i data-lucide="${state.trackingFilter.sortDir === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-narrow-wide'}" class="w-4 h-4"></i>`;
+            lucide.createIcons();
+            renderTrackingTable();
+        }
+
+        function renderTrackingTable() {
+            const tbody = document.getElementById('trackingTableBody');
+            tbody.innerHTML = '';
+            let list = [...state.trackings];
+
+            if (state.trackingFilter.search) {
+                const q = state.trackingFilter.search;
+                list = list.filter(t => {
+                    const rescanMatch = (t.rescanItems || []).some(r =>
+                        String(r.page).includes(q) || r.reason.toLowerCase().includes(q)
+                    );
+                    return (
+                        t.caseNo.toLowerCase().includes(q) ||
+                        t.boxNo.toLowerCase().includes(q) ||
+                        t.physWorker.toLowerCase().includes(q) ||
+                        t.scanWorker.toLowerCase().includes(q) ||
+                        t.physErrorWorker.toLowerCase().includes(q) ||
+                        t.numErrorWorker.toLowerCase().includes(q) ||
+                        rescanMatch
+                    );
+                });
+            }
+
+            if (state.trackingFilter.status !== 'ALL') {
+                list = list.filter(t => t.status === state.trackingFilter.status);
+            }
+
+            const field = state.trackingFilter.sortField;
+            const dir = state.trackingFilter.sortDir === 'asc' ? 1 : -1;
+            list.sort((a, b) => (a[field] < b[field] ? -1 * dir : a[field] > b[field] ? 1 * dir : 0));
+
+            const total = list.length;
+            const pageSize = state.trackingFilter.pageSize;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (state.trackingFilter.page > totalPages) state.trackingFilter.page = totalPages;
+
+            const startIdx = (state.trackingFilter.page - 1) * pageSize;
+            const pageData = list.slice(startIdx, startIdx + pageSize);
+
+            pageData.forEach(t => {
+                let statusBadge = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
+                if (t.status === 'Rescan Required') statusBadge = 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300';
+                if (t.status === 'In Progress') statusBadge = 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300';
+                if (t.status === 'Physical Repair Needed') statusBadge = 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
+
+                const a4Estimate = Math.round(t.paperAmount * 0.75);
+                const a3Estimate = t.paperAmount - a4Estimate;
+
+                const items = t.rescanItems || [];
+                const rescanHtml = items.length > 0
+                    ? `<div class="inline-flex items-center space-x-1.5 rtl:space-x-reverse">${items.map(item => `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50">P.${item.page}: ${item.reason}</span>`).join('')}</div>`
+                    : `<span class="text-slate-400 text-xs">None</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-700/30 transition border-b border-slate-100 dark:border-slate-700/50 whitespace-nowrap';
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap">${t.caseNo}</td>
+                    <td class="p-3 text-xs text-brand-600 dark:text-brand-400 font-semibold whitespace-nowrap">${t.boxNo}</td>
+                    <td class="p-3 whitespace-nowrap">
+                        <span class="font-bold">${t.paperAmount} sheets</span>
+                        <span class="text-[11px] text-slate-400 ml-1">(~${a4Estimate} A4 / ${a3Estimate} A3)</span>
+                    </td>
+                    <td class="p-3 font-medium whitespace-nowrap">${t.physWorker}</td>
+                    <td class="p-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">${t.physDate || '-'}</td>
+                    <td class="p-3 font-medium whitespace-nowrap">${t.scanWorker}</td>
+                    <td class="p-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">${t.scanDate || '-'}</td>
+                    <td class="p-3 font-medium whitespace-nowrap">${t.physErrorWorker}</td>
+                    <td class="p-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">${t.physErrorDate || '-'}</td>
+                    <td class="p-3 font-medium whitespace-nowrap">${t.numErrorWorker}</td>
+                    <td class="p-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">${t.numErrorDate || '-'}</td>
+                    <td class="p-3 whitespace-nowrap">${rescanHtml}</td>
+                    <td class="p-3 whitespace-nowrap">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${statusBadge}">${t.status}</span>
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                        <div class="flex items-center justify-end space-x-1 rtl:space-x-reverse">
+                            <button onclick="openEditTrackingModal(${t.id})" class="p-1.5 text-brand-600 hover:bg-brand-50 dark:hover:bg-slate-700 rounded-lg" title="Edit"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteTracking(${t.id})" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-700 rounded-lg" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('trackingPaginationInfo').textContent = total > 0 ? `Showing ${startIdx + 1} to ${Math.min(startIdx + pageSize, total)} of ${total} records` : 'No tracking records found';
+            document.getElementById('trackingCurrentPageNum').textContent = state.trackingFilter.page;
+            document.getElementById('trackingPrevBtn').disabled = state.trackingFilter.page <= 1;
+            document.getElementById('trackingNextBtn').disabled = state.trackingFilter.page >= totalPages;
+
+            lucide.createIcons();
+        }
+
+        function changeTrackingPage(d) { state.trackingFilter.page += d; renderTrackingTable(); }
+
+        function populateWorkerSelect(selectId, selectedName = '') {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            select.innerHTML = '<option value="Unassigned">Unassigned</option><option value="Pending">Pending</option>';
+            state.workers.forEach(w => {
+                const opt = document.createElement('option');
+                opt.value = w.name;
+                opt.textContent = `${w.name} (${w.role})`;
+                if (selectedName && w.name === selectedName) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function addRescanItemRow(page = '', reason = 'Superimposed') {
+            const container = document.getElementById('rescanItemsContainer');
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 rescan-item-row';
+            row.innerHTML = `
+                <input type="number" min="1" placeholder="Page #" value="${page}" required class="rescan-page-input w-24 px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <select class="rescan-reason-input flex-1 px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option value="Superimposed" ${reason === 'Superimposed' ? 'selected' : ''}>Superimposed / Overlapping</option>
+                    <option value="Torn Paper" ${reason === 'Torn Paper' ? 'selected' : ''}>Torn Paper</option>
+                    <option value="Couching" ${reason === 'Couching' ? 'selected' : ''}>Couching / Alignment</option>
+                    <option value="Curling or Wavy Edges" ${reason === 'Curling or Wavy Edges' ? 'selected' : ''}>Curling or Wavy Edges</option>
+                    <option value="Paper Jam" ${reason === 'Paper Jam' ? 'selected' : ''}>Paper Jammed</option>
+                </select>
+                <button type="button" onclick="this.parentElement.remove()" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-700 rounded-lg" title="Remove Page">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            `;
+            container.appendChild(row);
+            lucide.createIcons();
+        }
+
+        function openAddTrackingModal() {
+            document.getElementById('trackingModalTitle').textContent = "Add Box Tracking Record";
+            document.getElementById('editTrackingId').value = '';
+            document.getElementById('trackCaseNo').value = `CASE-0${state.trackings.length + 1}`;
+            document.getElementById('trackBoxNo').value = `BOX-01`;
+            document.getElementById('trackPaperAmount').value = 550;
+            document.getElementById('trackPhysDate').value = new Date().toISOString().slice(0,10);
+            document.getElementById('trackScanDate').value = new Date().toISOString().slice(0,10);
+            document.getElementById('trackPhysErrorDate').value = new Date().toISOString().slice(0,10);
+            document.getElementById('trackNumErrorDate').value = new Date().toISOString().slice(0,10);
+            document.getElementById('rescanItemsContainer').innerHTML = '';
+            document.getElementById('trackStatus').value = 'Passed QA';
+
+            ['trackPhysWorker', 'trackScanWorker', 'trackPhysErrorWorker', 'trackNumErrorWorker'].forEach(id => populateWorkerSelect(id));
+            document.getElementById('trackingModal').showModal();
+        }
+
+        function openEditTrackingModal(id) {
+            const t = state.trackings.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById('trackingModalTitle').textContent = "Edit Box Tracking Record";
+            document.getElementById('editTrackingId').value = t.id;
+            document.getElementById('trackCaseNo').value = t.caseNo;
+            document.getElementById('trackBoxNo').value = t.boxNo;
+            document.getElementById('trackPaperAmount').value = t.paperAmount;
+            document.getElementById('trackPhysDate').value = t.physDate;
+            document.getElementById('trackScanDate').value = t.scanDate;
+            document.getElementById('trackPhysErrorDate').value = t.physErrorDate;
+            document.getElementById('trackNumErrorDate').value = t.numErrorDate;
+
+            const container = document.getElementById('rescanItemsContainer');
+            container.innerHTML = '';
+            (t.rescanItems || []).forEach(item => addRescanItemRow(item.page, item.reason));
+
+            document.getElementById('trackStatus').value = t.status;
+
+            populateWorkerSelect('trackPhysWorker', t.physWorker);
+            populateWorkerSelect('trackScanWorker', t.scanWorker);
+            populateWorkerSelect('trackPhysErrorWorker', t.physErrorWorker);
+            populateWorkerSelect('trackNumErrorWorker', t.numErrorWorker);
+
+            document.getElementById('trackingModal').showModal();
+        }
+
+        function saveTracking(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editTrackingId').value;
+            const rescanRows = document.querySelectorAll('#rescanItemsContainer .rescan-item-row');
+            const rescanItems = Array.from(rescanRows).map(row => ({
+                page: parseInt(row.querySelector('.rescan-page-input').value, 10),
+                reason: row.querySelector('.rescan-reason-input').value
+            })).filter(item => !isNaN(item.page) && item.page > 0);
+
+            const data = {
+                caseNo: document.getElementById('trackCaseNo').value,
+                boxNo: document.getElementById('trackBoxNo').value,
+                paperAmount: parseInt(document.getElementById('trackPaperAmount').value) || 500,
+                physWorker: document.getElementById('trackPhysWorker').value,
+                physDate: document.getElementById('trackPhysDate').value,
+                scanWorker: document.getElementById('trackScanWorker').value,
+                scanDate: document.getElementById('trackScanDate').value,
+                physErrorWorker: document.getElementById('trackPhysErrorWorker').value,
+                physErrorDate: document.getElementById('trackPhysErrorDate').value,
+                numErrorWorker: document.getElementById('trackNumErrorWorker').value,
+                numErrorDate: document.getElementById('trackNumErrorDate').value,
+                rescanItems,
+                status: document.getElementById('trackStatus').value
+            };
+
+            if (editId) {
+                const item = state.trackings.find(x => x.id == editId);
+                if (item) Object.assign(item, data);
+                showToast('Tracking record updated');
+            } else {
+                const newId = state.trackings.length ? Math.max(...state.trackings.map(t => t.id)) + 1 : 1;
+                state.trackings.unshift({ id: newId, ...data });
+                showToast('Box tracking record added');
+            }
+            document.getElementById('trackingModal').close();
+            renderTrackingTable();
+        }
+
+        function deleteTracking(id) {
+            state.trackings = state.trackings.filter(t => t.id !== id);
+            renderTrackingTable();
+            showToast('Box tracking record deleted');
         }
     </script>
 </body>
